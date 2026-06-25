@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="OO" format="2">
+  <advance width="1693"/>
+  <unicode hex="11011"/>
+  <anchor x="929" y="1550" name="pulli"/>
+  <anchor x="482" y="1991" name="pulli_top"/>
+  <outline>
+    <contour>
+      <point x="763" y="0" type="line"/>
+      <point x="763" y="1825" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="100" y="1990" type="line"/>
+      <point x="929" y="1990" type="line"/>
+      <point x="929" y="166" type="line"/>
+      <point x="1593" y="166" type="line"/>
+      <point x="1593" y="0" type="line"/>
+    </contour>
+  </outline>
+</glyph>

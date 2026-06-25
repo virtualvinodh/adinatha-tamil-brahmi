@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="RRA.6" format="2">
+  <advance width="1527"/>
+  <anchor x="966" y="0" name="bottom"/>
+  <anchor x="103" y="1434" name="middle_left"/>
+  <anchor x="266" y="1574" name="middle_right"/>
+  <anchor x="388" y="1574" name="pulli"/>
+  <anchor x="680" y="1991" name="pulli_top"/>
+  <anchor x="1012" y="1991" name="top"/>
+  <outline>
+    <contour>
+      <point x="814" y="990" type="line"/>
+      <point x="814" y="0" type="line"/>
+      <point x="976" y="0" type="line"/>
+      <point x="984" y="994" type="line"/>
+      <point x="984" y="1106"/>
+      <point x="963" y="1161"/>
+      <point x="929" y="1161" type="qcurve" smooth="yes"/>
+      <point x="680" y="1161" type="line" smooth="yes"/>
+      <point x="498" y="1161"/>
+      <point x="388" y="1241" type="qcurve" smooth="yes"/>
+      <point x="266" y="1329"/>
+      <point x="266" y="1493" type="qcurve" smooth="yes"/>
+      <point x="266" y="1657"/>
+      <point x="388" y="1745" type="qcurve" smooth="yes"/>
+      <point x="498" y="1825"/>
+      <point x="680" y="1825" type="qcurve" smooth="yes"/>
+      <point x="1012" y="1825" type="line"/>
+      <point x="1012" y="1991" type="line"/>
+      <point x="680" y="1991" type="line" smooth="yes"/>
+      <point x="433" y="1991"/>
+      <point x="270" y="1856" type="qcurve" smooth="yes"/>
+      <point x="100" y="1718"/>
+      <point x="100" y="1493" type="qcurve" smooth="yes"/>
+      <point x="100" y="1275"/>
+      <point x="243" y="1144" type="qcurve" smooth="yes"/>
+      <point x="372" y="1028"/>
+      <point x="598" y="995" type="qcurve"/>
+    </contour>
+    <contour>
+      <point x="822" y="747" type="line"/>
+      <point x="133" y="-6" type="line"/>
+      <point x="299" y="-6" type="line"/>
+      <point x="822" y="581" type="line"/>
+    </contour>
+  </outline>
+</glyph>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WII.stub.mid" format="2">
+  <anchor x="378" y="-491" name="_top"/>
+  <outline>
+    <contour>
+      <point x="295" y="-560" type="line"/>
+      <point x="129" y="-560" type="line"/>
+      <point x="129" y="3" type="line"/>
+      <point x="295" y="0" type="line"/>
+    </contour>
+    <contour>
+      <point x="627" y="-560" type="line"/>
+      <point x="461" y="-560" type="line"/>
+      <point x="461" y="13" type="line"/>
+      <point x="627" y="13" type="line"/>
+    </contour>
+  </outline>
+</glyph>

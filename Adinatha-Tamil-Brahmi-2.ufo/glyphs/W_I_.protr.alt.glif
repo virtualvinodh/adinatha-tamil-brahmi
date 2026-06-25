@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WI.protr.alt" format="2">
+  <anchor x="107" y="1637" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="90" y="1720" type="line"/>
+      <point x="386" y="1720" type="line"/>
+      <point x="386" y="2076" type="line"/>
+      <point x="530" y="2076" type="line"/>
+      <point x="530" y="1558" type="line"/>
+      <point x="90" y="1558" type="line"/>
+    </contour>
+  </outline>
+</glyph>

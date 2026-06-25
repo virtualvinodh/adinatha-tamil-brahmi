@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="NNA" format="2">
+  <advance width="1693"/>
+  <unicode hex="11021"/>
+  <anchor x="1593" y="0" name="bottom"/>
+  <anchor x="764" y="998" name="middle_left"/>
+  <anchor x="929" y="998" name="middle_right"/>
+  <anchor x="929" y="998" name="pulli"/>
+  <anchor x="854" y="1991" name="pulli_top"/>
+  <anchor x="1593" y="1991" name="top"/>
+  <outline>
+    <contour>
+      <point x="1593" y="1991" type="line"/>
+      <point x="1593" y="1825" type="line"/>
+      <point x="929" y="1825" type="line"/>
+      <point x="929" y="166" type="line"/>
+      <point x="1593" y="166" type="line"/>
+      <point x="1593" y="0" type="line"/>
+      <point x="100" y="0" type="line"/>
+      <point x="100" y="166" type="line"/>
+      <point x="764" y="166" type="line"/>
+      <point x="764" y="1825" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="100" y="1991" type="line"/>
+    </contour>
+  </outline>
+</glyph>

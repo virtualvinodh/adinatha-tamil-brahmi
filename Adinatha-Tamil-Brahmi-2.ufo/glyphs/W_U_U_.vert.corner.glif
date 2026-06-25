@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WUU.vert.corner" format="2">
+  <anchor x="627" y="0" name="_bottom"/>
+  <outline>
+    <contour>
+      <point x="295" y="-488" type="line"/>
+      <point x="129" y="-488" type="line"/>
+      <point x="129" y="10" type="line"/>
+      <point x="295" y="10" type="line"/>
+    </contour>
+    <contour>
+      <point x="627" y="-491" type="line"/>
+      <point x="461" y="-491" type="line"/>
+      <point x="461" y="10" type="line"/>
+      <point x="627" y="10" type="line"/>
+    </contour>
+  </outline>
+</glyph>

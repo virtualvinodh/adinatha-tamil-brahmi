@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WE.pulli.top.protr.alt" format="2">
+  <anchor x="1094" y="1825" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="938" y="1990" type="line"/>
+      <point x="431" y="1990" type="line"/>
+      <point x="431" y="1825" type="line"/>
+      <point x="938" y="1825" type="line"/>
+    </contour>
+    <contour>
+      <point x="753" y="2143" type="qcurve" smooth="yes"/>
+      <point x="716" y="2107"/>
+      <point x="666" y="2107" type="qcurve" smooth="yes"/>
+      <point x="615" y="2107"/>
+      <point x="578" y="2143" type="qcurve" smooth="yes"/>
+      <point x="542" y="2179"/>
+      <point x="542" y="2230" type="qcurve" smooth="yes"/>
+      <point x="542" y="2282"/>
+      <point x="578" y="2318" type="qcurve" smooth="yes"/>
+      <point x="615" y="2354"/>
+      <point x="666" y="2354" type="qcurve" smooth="yes"/>
+      <point x="716" y="2354"/>
+      <point x="753" y="2318" type="qcurve" smooth="yes"/>
+      <point x="789" y="2282"/>
+      <point x="789" y="2230" type="qcurve" smooth="yes"/>
+      <point x="789" y="2179"/>
+    </contour>
+  </outline>
+</glyph>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WOO" format="2">
+  <unicode hex="11044"/>
+  <anchor x="770" y="1990" name="_top"/>
+  <outline>
+    <contour>
+      <point x="624" y="1493" type="line"/>
+      <point x="123" y="1493" type="line"/>
+      <point x="123" y="1659" type="line"/>
+      <point x="624" y="1659" type="line"/>
+    </contour>
+    <contour>
+      <point x="760" y="1990" type="line"/>
+      <point x="1261" y="1990" type="line"/>
+      <point x="1261" y="1824" type="line"/>
+      <point x="760" y="1824" type="line"/>
+    </contour>
+  </outline>
+</glyph>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="TTA.1" format="2">
+  <advance width="1527"/>
+  <anchor x="1416" y="496" name="bottom"/>
+  <anchor x="100" y="998" name="middle_left"/>
+  <anchor x="266" y="998" name="middle_right"/>
+  <anchor x="606" y="998" name="pulli"/>
+  <anchor x="1012" y="1991" name="pulli_top"/>
+  <anchor x="1427" y="1991" name="top"/>
+  <outline>
+    <contour>
+      <point x="281" y="1208" type="curve" smooth="yes"/>
+      <point x="281" y="1477"/>
+      <point x="453" y="1731"/>
+      <point x="741" y="1802" type="curve" smooth="yes"/>
+      <point x="828" y="1824"/>
+      <point x="923" y="1825"/>
+      <point x="1012" y="1825" type="curve" smooth="yes"/>
+      <point x="1427" y="1825" type="line"/>
+      <point x="1427" y="1991" type="line"/>
+      <point x="1068" y="1991" type="line" smooth="yes"/>
+      <point x="950" y="1991"/>
+      <point x="826" y="1989"/>
+      <point x="711" y="1962" type="curve" smooth="yes"/>
+      <point x="334" y="1875"/>
+      <point x="113" y="1559"/>
+      <point x="113" y="1208" type="curve" smooth="yes"/>
+      <point x="113" y="979"/>
+      <point x="262" y="757"/>
+      <point x="453" y="630" type="curve" smooth="yes"/>
+      <point x="615" y="523"/>
+      <point x="825" y="496"/>
+      <point x="1015" y="496" type="curve" smooth="yes"/>
+      <point x="1416" y="496" type="line"/>
+      <point x="1416" y="662" type="line"/>
+      <point x="973" y="662" type="line" smooth="yes"/>
+      <point x="888" y="662"/>
+      <point x="804" y="677"/>
+      <point x="722" y="699" type="curve"/>
+      <point x="477" y="763"/>
+      <point x="281" y="964"/>
+    </contour>
+  </outline>
+</glyph>

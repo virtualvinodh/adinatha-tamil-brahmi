@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="LA.2" format="2">
+  <advance width="1793"/>
+  <anchor x="1096" y="0" name="bottom"/>
+  <anchor x="1593" y="1574" name="middle_right"/>
+  <anchor x="1593" y="1574" name="pulli"/>
+  <anchor x="1530" y="1971" name="pulli_top"/>
+  <anchor x="1593" y="1991" name="top"/>
+  <anchor x="1427" y="1991" name="top_left"/>
+  <outline>
+    <contour>
+      <point x="1427" y="1991" type="line"/>
+      <point x="1593" y="1991" type="line"/>
+      <point x="1593" y="415" type="line" smooth="yes"/>
+      <point x="1593" y="244"/>
+      <point x="1471" y="122" type="qcurve" smooth="yes"/>
+      <point x="1349" y="0"/>
+      <point x="1178" y="0" type="qcurve" smooth="yes"/>
+      <point x="1012" y="0" type="line" smooth="yes"/>
+      <point x="603" y="0"/>
+      <point x="598" y="559" type="qcurve" smooth="yes"/>
+      <point x="598" y="559"/>
+      <point x="598" y="762" type="qcurve" smooth="yes"/>
+      <point x="598" y="1825" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="100" y="1991" type="line"/>
+      <point x="764" y="1991" type="line"/>
+      <point x="764" y="801" type="line" smooth="yes"/>
+      <point x="764" y="664"/>
+      <point x="764" y="559" type="qcurve" smooth="yes"/>
+      <point x="764" y="166"/>
+      <point x="1040" y="166" type="qcurve" smooth="yes"/>
+      <point x="1151" y="166" type="line" smooth="yes"/>
+      <point x="1265" y="166"/>
+      <point x="1346" y="251" type="qcurve" smooth="yes"/>
+      <point x="1427" y="335"/>
+      <point x="1427" y="454" type="qcurve" smooth="yes"/>
+    </contour>
+  </outline>
+  <guideline angle="90" x="598" y="0"/>
+  <guideline angle="90" x="764" y="0"/>
+</glyph>

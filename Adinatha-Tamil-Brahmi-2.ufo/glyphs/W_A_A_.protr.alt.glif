@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WAA.protr.alt" format="2">
+  <anchor x="102" y="1945" name="_middle_right.1"/>
+  <anchor x="102" y="1945" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="90" y="1990" type="line"/>
+      <point x="594" y="1990" type="line"/>
+      <point x="594" y="1825" type="line"/>
+      <point x="90" y="1825" type="line"/>
+    </contour>
+  </outline>
+</glyph>

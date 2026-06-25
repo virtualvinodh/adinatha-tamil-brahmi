@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="PULLI.left" format="2">
+  <anchor x="871" y="1153" name="_pulli"/>
+  <anchor x="871" y="1153" name="_pulli.left"/>
+  <outline>
+    <contour>
+      <point x="502" y="1151" type="qcurve" smooth="yes"/>
+      <point x="502" y="1099"/>
+      <point x="466" y="1063" type="qcurve"/>
+      <point x="429" y="1028"/>
+      <point x="379" y="1028" type="qcurve" smooth="yes"/>
+      <point x="328" y="1028"/>
+      <point x="291" y="1063" type="qcurve"/>
+      <point x="255" y="1099"/>
+      <point x="255" y="1151" type="qcurve" smooth="yes"/>
+      <point x="255" y="1201"/>
+      <point x="291" y="1237" type="qcurve" smooth="yes"/>
+      <point x="329" y="1275"/>
+      <point x="379" y="1275" type="qcurve" smooth="yes"/>
+      <point x="429" y="1275"/>
+      <point x="466" y="1237" type="qcurve"/>
+      <point x="502" y="1202"/>
+    </contour>
+  </outline>
+</glyph>

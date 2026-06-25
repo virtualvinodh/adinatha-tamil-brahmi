@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WOO.inv.protr.alt" format="2">
+  <anchor x="1095" y="1783" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="944" y="1990" type="line"/>
+      <point x="430" y="1990" type="line"/>
+      <point x="430" y="1824" type="line"/>
+      <point x="944" y="1824" type="line"/>
+    </contour>
+    <contour>
+      <point x="1078" y="1619" type="line"/>
+      <point x="1591" y="1619" type="line"/>
+      <point x="1591" y="1784" type="line"/>
+      <point x="1078" y="1784" type="line"/>
+    </contour>
+  </outline>
+</glyph>

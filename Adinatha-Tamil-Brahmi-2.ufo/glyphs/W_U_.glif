@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WU" format="2">
+  <unicode hex="1103C"/>
+  <anchor x="100" y="0" name="_bottom"/>
+  <outline>
+    <contour>
+      <point x="90" y="0" type="line"/>
+      <point x="594" y="0" type="line"/>
+      <point x="594" y="166" type="line"/>
+      <point x="90" y="166" type="line"/>
+    </contour>
+  </outline>
+</glyph>

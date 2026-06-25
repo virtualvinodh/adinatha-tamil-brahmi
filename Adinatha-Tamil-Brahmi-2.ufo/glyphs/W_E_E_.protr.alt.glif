@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WEE.protr.alt" format="2">
+  <anchor x="1094" y="1825" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="938" y="1990" type="line"/>
+      <point x="431" y="1990" type="line"/>
+      <point x="431" y="1825" type="line"/>
+      <point x="938" y="1825" type="line"/>
+    </contour>
+  </outline>
+</glyph>

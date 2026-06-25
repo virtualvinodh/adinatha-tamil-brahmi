@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="KA" format="2">
+  <advance width="1693"/>
+  <unicode hex="11013"/>
+  <anchor x="929" y="0" name="bottom"/>
+  <anchor x="929" y="1574" name="middle_right"/>
+  <anchor x="929" y="1574" name="pulli"/>
+  <anchor x="854" y="1991" name="pulli_top"/>
+  <anchor x="929" y="1991" name="top"/>
+  <anchor x="764" y="1991" name="top_left"/>
+  <anchor x="929" y="1574" name="top_mid"/>
+  <outline>
+    <contour>
+      <point x="764" y="1991" type="line"/>
+      <point x="929" y="1991" type="line"/>
+      <point x="929" y="1079" type="line"/>
+      <point x="1593" y="1079" type="line"/>
+      <point x="1593" y="913" type="line"/>
+      <point x="929" y="913" type="line"/>
+      <point x="929" y="0" type="line"/>
+      <point x="764" y="0" type="line"/>
+      <point x="764" y="913" type="line"/>
+      <point x="100" y="913" type="line"/>
+      <point x="100" y="1079" type="line"/>
+      <point x="764" y="1079" type="line"/>
+    </contour>
+  </outline>
+  <guideline angle="0" x="0" y="3201"/>
+  <guideline angle="0" x="0" y="1824"/>
+</glyph>

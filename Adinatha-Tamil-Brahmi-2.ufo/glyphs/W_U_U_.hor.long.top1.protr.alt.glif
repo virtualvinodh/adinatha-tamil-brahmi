@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WUU.hor.long.top1.protr.alt" format="2">
+  <anchor x="100" y="-166" name="_bottom"/>
+  <outline>
+    <contour>
+      <point x="-327" y="332" type="line"/>
+      <point x="591" y="332" type="line"/>
+      <point x="591" y="498" type="line"/>
+      <point x="-327" y="498" type="line"/>
+    </contour>
+    <contour>
+      <point x="-130" y="0" type="line"/>
+      <point x="591" y="0" type="line"/>
+      <point x="591" y="166" type="line"/>
+      <point x="-130" y="166" type="line"/>
+    </contour>
+  </outline>
+</glyph>

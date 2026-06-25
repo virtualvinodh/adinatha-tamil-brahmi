@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="RA" format="2">
+  <advance width="566"/>
+  <unicode hex="1102D"/>
+  <anchor x="366" y="162" name="bottom"/>
+  <anchor x="366" y="1574" name="middle_right"/>
+  <anchor x="366" y="1574" name="pulli"/>
+  <anchor x="297" y="1991" name="pulli_top"/>
+  <anchor x="366" y="1991" name="top"/>
+  <anchor x="200" y="1822" name="top_left"/>
+  <outline>
+    <contour>
+      <point x="200" y="1991" type="line"/>
+      <point x="366" y="1991" type="line"/>
+      <point x="366" y="0" type="line"/>
+      <point x="200" y="0" type="line"/>
+    </contour>
+  </outline>
+  <guideline angle="0" x="0" y="1822"/>
+  <guideline angle="0" x="0" y="162"/>
+</glyph>

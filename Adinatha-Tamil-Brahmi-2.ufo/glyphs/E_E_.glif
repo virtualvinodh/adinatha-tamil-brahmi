@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="EE" format="2">
+  <advance width="1461"/>
+  <unicode hex="1100F"/>
+  <anchor x="1361" y="995" name="pulli"/>
+  <anchor x="657" y="998" name="pulli_inside"/>
+  <anchor x="200" y="995" name="pulli_left"/>
+  <anchor x="689" y="1990" name="pulli_top"/>
+  <outline>
+    <contour>
+      <point x="366" y="0" type="line"/>
+      <point x="1361" y="995" type="line"/>
+      <point x="366" y="1990" type="line"/>
+      <point x="200" y="1990" type="line"/>
+      <point x="200" y="0" type="line"/>
+    </contour>
+    <contour>
+      <point x="1125" y="997" type="line"/>
+      <point x="366" y="236" type="line"/>
+      <point x="366" y="1758" type="line"/>
+    </contour>
+  </outline>
+</glyph>

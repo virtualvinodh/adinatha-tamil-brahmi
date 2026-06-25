@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WAU" format="2">
+  <unicode hex="11045"/>
+  <anchor x="594" y="1990" name="_top_left"/>
+  <outline>
+    <contour>
+      <point x="604" y="1493" type="line"/>
+      <point x="100" y="1493" type="line"/>
+      <point x="100" y="1659" type="line"/>
+      <point x="604" y="1659" type="line"/>
+    </contour>
+    <contour>
+      <point x="750" y="1825" type="line"/>
+      <point x="1251" y="1825" type="line"/>
+      <point x="1251" y="1659" type="line"/>
+      <point x="750" y="1659" type="line"/>
+    </contour>
+    <contour>
+      <point x="604" y="1825" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="100" y="1990" type="line"/>
+      <point x="604" y="1990" type="line"/>
+    </contour>
+  </outline>
+</glyph>

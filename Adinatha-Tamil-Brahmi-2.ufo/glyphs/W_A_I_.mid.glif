@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WAI.mid" format="2">
+  <anchor x="591" y="1742" name="_middle_left"/>
+  <outline>
+    <contour>
+      <point x="620" y="1990" type="line"/>
+      <point x="100" y="1990" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="620" y="1825" type="line"/>
+    </contour>
+    <contour>
+      <point x="611" y="1659" type="line"/>
+      <point x="100" y="1659" type="line"/>
+      <point x="100" y="1493" type="line"/>
+      <point x="611" y="1493" type="line"/>
+    </contour>
+  </outline>
+</glyph>

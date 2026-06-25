@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WII" format="2">
+  <unicode hex="1103B"/>
+  <anchor x="100" y="1720" name="_top"/>
+  <outline>
+    <contour>
+      <point x="90" y="1720" type="line"/>
+      <point x="243" y="1720" type="line"/>
+      <point x="243" y="2218" type="line"/>
+      <point x="386" y="2218" type="line"/>
+      <point x="386" y="1720" type="line"/>
+      <point x="530" y="1720" type="line"/>
+      <point x="530" y="2218" type="line"/>
+      <point x="673" y="2218" type="line"/>
+      <point x="673" y="1556" type="line"/>
+      <point x="90" y="1556" type="line"/>
+    </contour>
+  </outline>
+</glyph>

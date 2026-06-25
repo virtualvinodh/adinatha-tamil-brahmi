@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WE.mid.pulli.top.alt" format="2">
+  <anchor x="928" y="1904" name="_middle_left"/>
+  <outline>
+    <contour>
+      <point x="938" y="1990" type="line"/>
+      <point x="431" y="1990" type="line"/>
+      <point x="431" y="1825" type="line"/>
+      <point x="938" y="1825" type="line"/>
+    </contour>
+    <contour>
+      <point x="753" y="2160" type="qcurve" smooth="yes"/>
+      <point x="716" y="2124"/>
+      <point x="666" y="2124" type="qcurve" smooth="yes"/>
+      <point x="615" y="2124"/>
+      <point x="578" y="2160" type="qcurve" smooth="yes"/>
+      <point x="542" y="2196"/>
+      <point x="542" y="2247" type="qcurve" smooth="yes"/>
+      <point x="542" y="2299"/>
+      <point x="578" y="2335" type="qcurve" smooth="yes"/>
+      <point x="615" y="2371"/>
+      <point x="666" y="2371" type="qcurve" smooth="yes"/>
+      <point x="716" y="2371"/>
+      <point x="753" y="2335" type="qcurve" smooth="yes"/>
+      <point x="789" y="2299"/>
+      <point x="789" y="2247" type="qcurve" smooth="yes"/>
+      <point x="789" y="2196"/>
+    </contour>
+  </outline>
+</glyph>

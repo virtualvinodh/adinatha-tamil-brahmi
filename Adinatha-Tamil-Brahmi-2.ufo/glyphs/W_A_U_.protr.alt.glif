@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WAU.protr.alt" format="2">
+  <anchor x="760" y="1825" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="604" y="1490" type="line"/>
+      <point x="100" y="1490" type="line"/>
+      <point x="100" y="1656" type="line"/>
+      <point x="604" y="1656" type="line"/>
+    </contour>
+    <contour>
+      <point x="750" y="1825" type="line"/>
+      <point x="1251" y="1825" type="line"/>
+      <point x="1251" y="1659" type="line"/>
+      <point x="750" y="1659" type="line"/>
+    </contour>
+    <contour>
+      <point x="604" y="1825" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="100" y="1990" type="line"/>
+      <point x="604" y="1990" type="line"/>
+    </contour>
+  </outline>
+</glyph>

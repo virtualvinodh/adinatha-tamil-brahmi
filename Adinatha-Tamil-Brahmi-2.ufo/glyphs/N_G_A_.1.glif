@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="NGA.1" format="2">
+  <advance width="1295"/>
+  <anchor x="1195" y="0" name="bottom"/>
+  <anchor x="200" y="998" name="middle_left"/>
+  <anchor x="366" y="998" name="middle_right"/>
+  <anchor x="366" y="998" name="pulli"/>
+  <anchor x="643" y="1991" name="pulli_top"/>
+  <anchor x="956" y="1991" name="top"/>
+  <outline>
+    <contour>
+      <point x="956" y="1991" type="line"/>
+      <point x="956" y="1825" type="line"/>
+      <point x="366" y="1825" type="line"/>
+      <point x="366" y="166" type="line"/>
+      <point x="956" y="166" type="line"/>
+      <point x="956" y="0" type="line"/>
+      <point x="200" y="0" type="line"/>
+      <point x="200" y="1991" type="line"/>
+    </contour>
+  </outline>
+</glyph>

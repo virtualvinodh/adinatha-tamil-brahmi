@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="TA.3" format="2">
+  <advance width="1693"/>
+  <anchor x="1593" y="0" name="bottom"/>
+  <anchor x="929" y="1574" name="middle_right"/>
+  <anchor x="929" y="1574" name="pulli"/>
+  <anchor x="854" y="1991" name="pulli_top"/>
+  <anchor x="1976" y="145" name="right"/>
+  <anchor x="929" y="1991" name="top"/>
+  <anchor x="764" y="1991" name="top_left"/>
+  <outline>
+    <contour>
+      <point x="764" y="1991" type="line"/>
+      <point x="764" y="1035" type="line"/>
+      <point x="772" y="896" type="line"/>
+      <point x="929" y="938" type="line"/>
+      <point x="929" y="1991" type="line"/>
+    </contour>
+    <contour>
+      <point x="846" y="907" type="curve"/>
+      <point x="764" y="1079" type="line"/>
+      <point x="764" y="1079" type="line"/>
+      <point x="266" y="651"/>
+      <point x="228" y="587"/>
+      <point x="100" y="0" type="curve"/>
+      <point x="266" y="0" type="line"/>
+      <point x="328" y="387"/>
+      <point x="328" y="562"/>
+    </contour>
+    <contour>
+      <point x="826" y="907" type="line"/>
+      <point x="1344" y="562"/>
+      <point x="1344" y="387"/>
+      <point x="1406" y="0" type="curve"/>
+      <point x="1572" y="0" type="line"/>
+      <point x="1444" y="587"/>
+      <point x="1406" y="651"/>
+      <point x="908" y="1079" type="curve"/>
+      <point x="908" y="1079" type="line"/>
+    </contour>
+  </outline>
+  <guideline angle="90" x="2093" y="0"/>
+</glyph>

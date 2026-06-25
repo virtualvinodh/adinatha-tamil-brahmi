@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="NNNA.2" format="2">
+  <advance width="1793"/>
+  <anchor x="1593" y="0" name="bottom"/>
+  <anchor x="680" y="1574" name="middle_left"/>
+  <anchor x="2071" y="878" name="middle_right"/>
+  <anchor x="2071" y="1111" name="middle_right.1"/>
+  <anchor x="2071" y="1577" name="pulli"/>
+  <anchor x="1328" y="1991" name="pulli_top"/>
+  <anchor x="1328" y="1991" name="top"/>
+  <anchor x="837" y="1991" name="top_left"/>
+  <outline>
+    <contour>
+      <point x="100" y="0" type="line"/>
+      <point x="100" y="166" type="line"/>
+      <point x="680" y="166" type="line"/>
+      <point x="680" y="1577" type="line" smooth="yes"/>
+      <point x="680" y="1747"/>
+      <point x="802" y="1869" type="qcurve" smooth="yes"/>
+      <point x="924" y="1991"/>
+      <point x="1095" y="1991" type="qcurve" smooth="yes"/>
+      <point x="1654" y="1991" type="line" smooth="yes"/>
+      <point x="1825" y="1991"/>
+      <point x="1947" y="1869" type="qcurve" smooth="yes"/>
+      <point x="2069" y="1747"/>
+      <point x="2069" y="1577" type="qcurve" smooth="yes"/>
+      <point x="2069" y="-499" type="line"/>
+      <point x="1903" y="-499" type="line"/>
+      <point x="1903" y="1538" type="line" smooth="yes"/>
+      <point x="1903" y="1678"/>
+      <point x="1822" y="1740" type="qcurve" smooth="yes"/>
+      <point x="1690" y="1825"/>
+      <point x="1627" y="1825" type="qcurve" smooth="yes"/>
+      <point x="1598" y="1825" type="line" smooth="yes"/>
+      <point x="1128" y="1825"/>
+      <point x="1019" y="1824" type="qcurve" smooth="yes"/>
+      <point x="846" y="1748"/>
+      <point x="846" y="1538" type="qcurve" smooth="yes"/>
+      <point x="846" y="166" type="line"/>
+      <point x="1593" y="166" type="line"/>
+      <point x="1593" y="0" type="line"/>
+    </contour>
+  </outline>
+</glyph>

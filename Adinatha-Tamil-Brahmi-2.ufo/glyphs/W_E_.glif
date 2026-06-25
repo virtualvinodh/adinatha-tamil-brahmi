@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WE" format="2">
+  <unicode hex="11073"/>
+  <anchor x="928" y="1990" name="_top_left"/>
+  <outline>
+    <contour>
+      <point x="938" y="1990" type="line"/>
+      <point x="431" y="1990" type="line"/>
+      <point x="431" y="1825" type="line"/>
+      <point x="938" y="1825" type="line"/>
+    </contour>
+    <contour>
+      <point x="214" y="1820" type="qcurve" smooth="yes"/>
+      <point x="177" y="1784"/>
+      <point x="127" y="1784" type="qcurve" smooth="yes"/>
+      <point x="76" y="1784"/>
+      <point x="39" y="1820" type="qcurve" smooth="yes"/>
+      <point x="3" y="1856"/>
+      <point x="3" y="1907" type="qcurve" smooth="yes"/>
+      <point x="3" y="1959"/>
+      <point x="39" y="1995" type="qcurve" smooth="yes"/>
+      <point x="76" y="2031"/>
+      <point x="127" y="2031" type="qcurve" smooth="yes"/>
+      <point x="177" y="2031"/>
+      <point x="214" y="1995" type="qcurve" smooth="yes"/>
+      <point x="250" y="1959"/>
+      <point x="250" y="1907" type="qcurve" smooth="yes"/>
+      <point x="250" y="1856"/>
+    </contour>
+  </outline>
+</glyph>

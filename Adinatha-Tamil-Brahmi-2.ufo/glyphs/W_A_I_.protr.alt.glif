@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WAI.protr.alt" format="2">
+  <anchor x="759" y="1784" name="_pulli"/>
+  <outline>
+    <contour>
+      <point x="601" y="1990" type="line"/>
+      <point x="100" y="1990" type="line"/>
+      <point x="100" y="1825" type="line"/>
+      <point x="601" y="1825" type="line"/>
+    </contour>
+    <contour>
+      <point x="601" y="1659" type="line"/>
+      <point x="100" y="1659" type="line"/>
+      <point x="100" y="1493" type="line"/>
+      <point x="601" y="1493" type="line"/>
+    </contour>
+  </outline>
+</glyph>

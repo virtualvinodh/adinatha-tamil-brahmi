@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="WOO.inv.alt" format="2">
+  <anchor x="1095" y="1990" name="_top"/>
+  <outline>
+    <contour>
+      <point x="944" y="1990" type="line"/>
+      <point x="430" y="1990" type="line"/>
+      <point x="430" y="1824" type="line"/>
+      <point x="944" y="1824" type="line"/>
+    </contour>
+    <contour>
+      <point x="1078" y="1490" type="line"/>
+      <point x="1591" y="1490" type="line"/>
+      <point x="1591" y="1655" type="line"/>
+      <point x="1078" y="1655" type="line"/>
+    </contour>
+  </outline>
+</glyph>

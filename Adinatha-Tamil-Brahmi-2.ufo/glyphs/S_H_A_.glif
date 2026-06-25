@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="SHA" format="2">
+  <advance width="1693"/>
+  <unicode hex="11030"/>
+  <anchor x="1593" y="0" name="bottom"/>
+  <anchor x="1068" y="1574" name="pulli"/>
+  <anchor x="854" y="1991" name="pulli_top"/>
+  <anchor x="929" y="1991" name="top"/>
+  <anchor x="764" y="1991" name="top_left"/>
+  <outline>
+    <contour>
+      <point x="929" y="0" type="line"/>
+      <point x="764" y="0" type="line"/>
+      <point x="764" y="1493" type="line"/>
+      <point x="266" y="0" type="line"/>
+      <point x="100" y="0" type="line"/>
+      <point x="764" y="1991" type="line"/>
+      <point x="929" y="1991" type="line"/>
+      <point x="1593" y="0" type="line"/>
+      <point x="1427" y="0" type="line"/>
+      <point x="929" y="1493" type="line"/>
+    </contour>
+  </outline>
+</glyph>

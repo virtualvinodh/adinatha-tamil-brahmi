@@ -1,0 +1,13 @@
+# FontCreator binary files
+*.vfc
+
+# Backup folders
+*.backup/
+
+# Compiled fonts (generate these from UFO source)
+*.ttf
+*.otf
+
+# OS files
+Thumbs.db
+.DS_Store
