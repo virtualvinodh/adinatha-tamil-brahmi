@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="O.s3" format="2">
+  <advance width="1693"/>
+  <outline>
+    <component base="OO"/>
+    <component base="PULLI.left.1" xOffset="1693" yOffset="0"/>
+  </outline>
+</glyph>

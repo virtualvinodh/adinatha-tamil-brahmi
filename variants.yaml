@@ -1,0 +1,403 @@
+# variants.yaml — Adinatha Tamil Brahmi glyph variant registry
+# See yaml.md for schema documentation.
+# After editing, run:  python gen_features.py  then  build.bat
+
+consonants:
+
+  - name: A
+    glyph: A
+    unicode: "0x11005"
+    syllable: false
+    variants:
+      - { glyph: A.1, label: A.1, vs: 1 }
+      - { glyph: A.2, label: A.2, vs: 2 }
+
+  - name: AA
+    glyph: AA
+    unicode: "0x11006"
+    syllable: false
+    compose: [A, WAA]
+    variants:
+      - { glyph: AA.1, label: AA.1, vs: 1 }
+      - { glyph: AA.2, label: AA.2, vs: 2 }
+      - { glyph: AA.3, label: AA.3, vs: 3 }
+
+  - name: EE
+    glyph: EE
+    unicode: "0x1100F"
+    syllable: false
+    variants:
+      - { glyph: EE.1, label: EE.1, vs: 1 }
+      - { glyph: EE.2, label: EE.2, vs: 2 }
+      - { glyph: EE.3, label: EE.3, vs: 3 }
+
+  - name: KA
+    glyph: KA
+    unicode: "0x11013"
+    variants:
+      - { glyph: KA.1, label: KA.1, vs: 1 }
+      - { glyph: KA.2, label: KA.2, vs: 2 }
+      - { glyph: KA.3, label: KA.3, vs: 3 }
+      - { glyph: KA.4, label: KA.4, vs: 4 }
+      - { glyph: KA.5, label: KA.5, vs: 5 }
+
+  - name: NGA
+    glyph: NGA
+    unicode: "0x11017"
+    variants:
+      - { glyph: NGA.1, label: NGA.1, vs: 1 }
+      - { glyph: NGA.2, label: NGA.2, vs: 2 }
+    contextual:
+      - NGA.pulli.topa.alt
+
+  - name: CA
+    glyph: CA
+    unicode: "0x11018"
+    variants:
+      - { glyph: CA.1, label: CA.1, vs: 1 }
+      - { glyph: CA.2, label: CA.2, vs: 2 }
+      - { glyph: CA.3, label: CA.3, vs: 3 }
+      - { glyph: CA.4, label: CA.4, vs: 4 }
+
+  - name: JA
+    glyph: JA
+    unicode: "0x1101A"
+
+  - name: NYA
+    glyph: NYA
+    unicode: "0x1101C"
+    variants:
+      - { glyph: NYA.1, label: NYA.1, vs: 1 }
+      - { glyph: NYA.2, label: NYA.2, vs: 2 }
+      - { glyph: NYA.3, label: NYA.3, vs: 3 }
+      - { glyph: NYA.4, label: NYA.4, vs: 4 }
+      - { glyph: NYA.5, label: NYA.5, vs: 5 }
+
+  - name: TTA
+    glyph: TTA
+    unicode: "0x1101D"
+    variants:
+      - { glyph: TTA.1, label: TTA.1, vs: 1 }
+      - { glyph: TTA.2, label: TTA.2, vs: 2 }
+      - { glyph: TTA.4, label: TTA.4, vs: 4 }   # vs: 3 skipped — TTA.3 does not exist
+    contextual:
+      - TTA.pulli.top.alt
+
+  - name: NNA
+    glyph: NNA
+    unicode: "0x11021"
+    variants:
+      - { glyph: NNA.1, label: NNA.1, vs: 1 }
+      - { glyph: NNA.2, label: NNA.2, vs: 2 }
+      - { glyph: NNA.3, label: NNA.3, vs: 3 }
+    contextual:
+      - NNA.pulli.top.alt
+
+  - name: TA
+    glyph: TA
+    unicode: "0x11022"
+    variants:
+      - { glyph: TA.1, label: TA.1, vs: 1 }
+      - { glyph: TA.2, label: TA.2, vs: 2 }
+      - { glyph: TA.3, label: TA.3, vs: 3 }
+      - { glyph: TA.4, label: TA.4, vs: 4 }
+      - { glyph: TA.5, label: TA.5, vs: 5 }
+
+  - name: DHA
+    glyph: DHA
+    unicode: "0x11025"
+
+  - name: NA
+    glyph: NA
+    unicode: "0x11026"
+    variants:
+      - { glyph: NA.1, label: NA.1, vs: 1 }
+      - { glyph: NA.2, label: NA.2, vs: 2 }
+      - { glyph: NA.3, label: NA.3, vs: 3 }
+
+  - name: PA
+    glyph: PA
+    unicode: "0x11027"
+    variants:
+      - { glyph: PA.1, label: PA.1, vs: 1 }
+      - { glyph: PA.2, label: PA.2, vs: 2 }
+      - { glyph: PA.3, label: PA.3, vs: 3 }
+      - { glyph: PA.4, label: PA.4, vs: 4 }
+      - { glyph: PA.5, label: PA.5, vs: 5 }
+      - { glyph: PA.6, label: PA.6, vs: 6 }
+      - { glyph: PA.7, label: PA.7, vs: 7 }
+      - { glyph: PA.8, label: PA.8, vs: 8 }
+
+  - name: MA
+    glyph: MA
+    unicode: "0x1102B"
+    variants:
+      - { glyph: MA.1, label: MA.1, vs: 1 }
+      - { glyph: MA.2, label: MA.2, vs: 2 }
+      - { glyph: MA.3, label: MA.3, vs: 3 }
+      - { glyph: MA.4, label: MA.4, vs: 4 }
+      - { glyph: MA.5, label: MA.5, vs: 5 }
+      - { glyph: MA.7, label: MA.7, vs: 7 }   # vs: 6 skipped — MA.6 does not exist
+      - { glyph: MA.8, label: MA.8, vs: 8 }
+
+  - name: YA
+    glyph: YA
+    unicode: "0x1102C"
+    variants:
+      - { glyph: YA.1, label: YA.1, vs: 1 }
+      - { glyph: YA.2, label: YA.2, vs: 2 }
+      - { glyph: YA.3, label: YA.3, vs: 3 }
+      - { glyph: YA.4, label: YA.4, vs: 4 }
+      - { glyph: YA.5, label: YA.5, vs: 5 }
+      - { glyph: YA.6, label: YA.6, vs: 6 }
+
+  - name: RA
+    glyph: RA
+    unicode: "0x1102D"
+    variants:
+      - { glyph: RA.1, label: RA.1, vs: 1 }
+
+  - name: LA
+    glyph: LA
+    unicode: "0x1102E"
+    variants:
+      - { glyph: LA.1, label: LA.1, vs: 1 }
+      - { glyph: LA.2, label: LA.2, vs: 2 }
+
+  - name: VA
+    glyph: VA
+    unicode: "0x1102F"
+    variants:
+      - { glyph: VA.1, label: VA.1, vs: 1 }
+      - { glyph: VA.2, label: VA.2, vs: 2 }
+      - { glyph: VA.3, label: VA.3, vs: 3 }
+      - { glyph: VA.4, label: VA.4, vs: 4 }
+      - { glyph: VA.5, label: VA.5, vs: 5 }
+      - { glyph: VA.6, label: VA.6, vs: 6 }
+
+  - name: SHA
+    glyph: SHA
+    unicode: "0x11030"
+    variants:
+      - { glyph: SHA.1, label: SHA.1, vs: 1 }
+      - { glyph: SHA.2, label: SHA.2, vs: 2 }
+
+  - name: SSA
+    glyph: SSA
+    unicode: "0x11031"
+    variants:
+      - { glyph: SSA.1, label: SSA.1, vs: 1 }
+
+  - name: SA
+    glyph: SA
+    unicode: "0x11032"
+    variants:
+      - { glyph: SA.1, label: SA.1, vs: 1 }
+      - { glyph: SA.2, label: SA.2, vs: 2 }
+      - { glyph: SA.3, label: SA.3, vs: 3 }
+
+  - name: HA
+    glyph: HA
+    unicode: "0x11033"
+    variants:
+      - { glyph: HA.1, label: HA.1, vs: 1 }
+
+  - name: LLLA
+    glyph: LLLA
+    unicode: "0x11035"
+    variants:
+      - { glyph: LLLA.1, label: LLLA.1, vs: 1 }
+      - { glyph: LLLA.2, label: LLLA.2, vs: 2 }
+      - { glyph: LLLA.3, label: LLLA.3, vs: 3 }
+      - { glyph: LLLA.4, label: LLLA.4, vs: 4 }
+
+  - name: RRA
+    glyph: RRA
+    unicode: "0x11036"
+    variants:
+      - { glyph: RRA.1, label: RRA.1, vs: 1 }
+      - { glyph: RRA.2, label: RRA.2, vs: 2 }
+      - { glyph: RRA.3, label: RRA.3, vs: 3 }
+      - { glyph: RRA.4, label: RRA.4, vs: 4 }
+      - { glyph: RRA.5, label: RRA.5, vs: 5 }
+      - { glyph: RRA.6, label: RRA.6, vs: 6 }
+
+  - name: NNNA
+    glyph: NNNA
+    unicode: "0x11037"
+    variants:
+      - { glyph: NNNA.1, label: NNNA.1, vs: 1 }
+      - { glyph: NNNA.2, label: NNNA.2, vs: 2 }
+
+  - name: LLA
+    glyph: LLA
+    unicode: "0x11075"
+    variants:
+      - { glyph: LLA.1, label: LLA.1, vs: 1 }
+      - { glyph: LLA.2, label: LLA.2, vs: 2 }
+      - { glyph: LLA.3, label: LLA.3, vs: 3 }
+      - { glyph: LLA.4, label: LLA.4, vs: 4 }
+      - { glyph: LLA.5, label: LLA.5, vs: 5 }
+      - { glyph: LLA.6, label: LLA.6, vs: 6 }
+      - { glyph: LLA.7, label: LLA.7, vs: 7 }
+
+independent_vowels:
+
+  - name: AI
+    glyph: AI
+    unicode: "0x11010"
+    compose: [EE, WEE]
+    # VS applied to WEE after ccmp decomposition — see signs.WEE
+
+  - name: I
+    glyph: I
+    unicode: "0x11007"
+    variants:
+      - { glyph: I.1, label: I.1, vs: 1 }
+      - { glyph: I.2, label: I.2, vs: 2 }
+
+  - name: E
+    glyph: E
+    unicode: "0x11071"
+    compose: [EE, PULLI]
+    # VS applies to PULLI after ccmp decomposition — see signs.PULLI
+
+  - name: O
+    glyph: O
+    unicode: "0x11072"
+    compose: [OO, PULLI]
+    # VS applies to PULLI after ccmp decomposition — see signs.PULLI
+
+signs:
+
+  - name: pulli
+    glyph: PULLI
+    unicode: "0x11070"
+    variants:
+      - { glyph: PULLI.top,    label: top,    vs: 1 }
+      - { glyph: PULLI.left,   label: left,   vs: 2 }
+      - { glyph: PULLI.left.1, label: left.1, vs: 3 }
+      - { glyph: PULLI.inside, label: inside, vs: 4 }
+
+  - name: "ā"    # ā
+    glyph: WAA
+    unicode: "0x11038"
+    variants:
+      - { glyph: WAA.protr.alt, label: "protr.", vs: 1, after: "@mid_alt_cons_ae" }
+    contextual:
+      - WAA.mid
+      - WAA.mid.mid.alt
+
+  - name: "i"
+    glyph: WI
+    unicode: "0x1103A"
+    variants:
+      - { glyph: WI.protr.alt,      label: "protr.",      vs: 1, after: "@mid_alt_cons_ae" }
+      - { glyph: WI.stub.protr.alt, label: "stub.protr.", vs: 2, after: "@stubi" }
+    contextual:
+      - WI.stub
+      - WI.stub.mid
+      - WI.mid.mid.alt
+
+  - name: "ī"    # ī
+    glyph: WII
+    unicode: "0x1103B"
+    variants:
+      - { glyph: WII.protr.alt,      label: "protr.",      vs: 1, after: "@mid_alt_cons_ae" }
+      - { glyph: WII.stub.protr.alt, label: "stub.protr.", vs: 2, after: "@stubi" }
+    contextual:
+      - WII.stub
+      - WII.stub.mid
+      - WII.mid.mid.allt    # note: typo in current font glyph name
+
+  - name: "u"
+    glyph: WU
+    unicode: "0x1103C"
+    variants:
+      - { glyph: WU.protr.alt, label: "protr.", vs: 1, after: "@mid_alt_cons_u" }
+    contextual:
+      - WU.vert.mid
+      - WU.vert.corner
+      - WU.vert.corner.alt
+      - WU.vert.corner.1.alt
+      - WU.horiz.long1
+      - WU.horiz.long1.protr.alt
+      - WU.horiz.long2
+      - WU.horiz.long2.protr.alt
+      - WU.1.longka
+
+  - name: "ū"    # ū
+    glyph: WUU
+    unicode: "0x1103D"
+    variants:
+      - { glyph: WUU.protr.alt, label: "protr.",  vs: 1, after: "@mid_alt_cons_u" }
+      - { glyph: WUU.mid.alt.1, label: "mid.alt", vs: 2, after: [LLLA] }
+    contextual:
+      - WUU.vert.mid
+      - WUU.vert.corner
+      - WUU.vert.corner.alt
+      - WUU.vert.corner.1.alt
+      - WUU.vert.corner.alt.1
+      - WUU.hor.long.bot
+      - WUU.hor.long.bot.protr.alt
+      - WUU.hor.long.top1
+      - WUU.hor.long.top1.protr.alt
+      - WUU.hor.long.top2
+      - WUU.hor.long.top2.protr.alt
+      - WUU.hor.long.top3
+      - WUU.hor.long.top3.protr.alt
+      - WUU.hor.long.top4
+      - WUU.hor.long.top4.protr.alt
+
+  - name: "ĕ"    # ĕ (Tamil Brahmi short e)
+    glyph: WE
+    unicode: "0x11073"
+    variants:
+      - { glyph: WE.protr.alt,           label: "protr.",           vs: 1 }
+      - { glyph: WE.pulli.top.alt,       label: "pulli.top",        vs: 2 }
+      - { glyph: WE.pulli.top.protr.alt, label: "pulli.top.protr.", vs: 3 }
+    contextual:
+      - WE.mid
+      - WE.mid.pulli.top.alt
+
+  - name: "e"
+    glyph: WEE
+    unicode: "0x11042"
+    variants:
+      - { glyph: WEE.protr.alt, label: "protr.", vs: 1 }
+    contextual:
+      - WEE.mid
+
+  - name: "ai"
+    glyph: WAI
+    unicode: "0x11043"
+    variants:
+      - { glyph: WAI.protr.alt, label: "protr.", vs: 1 }
+    contextual:
+      - WAI.mid
+
+  - name: "ŏ"    # ŏ (Tamil Brahmi short o)
+    glyph: WO
+    unicode: "0x11074"
+    variants:
+      - { glyph: WO.protr.alt,               label: "protr.",              vs: 1 }
+      - { glyph: WO.pulli.top.alt,           label: "pulli.top",           vs: 2 }
+      - { glyph: WO.pulli.top.protr.alt,     label: "pulli.top.protr.",    vs: 3 }
+      - { glyph: WO.inv.alt,                 label: "inv",                 vs: 4 }
+      - { glyph: WO.inv.protr.alt,           label: "inv.protr.",          vs: 5 }
+      - { glyph: WO.inv.pulli.top.alt,       label: "inv.pulli.top",       vs: 6 }
+      - { glyph: WO.inv.pulli.top.protr.alt, label: "inv.pulli.top.protr.", vs: 7 }
+
+  - name: "o"
+    glyph: WOO
+    unicode: "0x11044"
+    variants:
+      - { glyph: WOO.inv.alt,      label: "inv",        vs: 1 }
+      - { glyph: WOO.protr.alt,    label: "protr.",     vs: 2 }
+      - { glyph: WOO.inv.protr.alt, label: "inv.protr.", vs: 3 }
+
+  - name: "au"
+    glyph: WAU
+    unicode: "0x11045"
+    variants:
+      - { glyph: WAU.protr.alt, label: "protr.", vs: 1 }

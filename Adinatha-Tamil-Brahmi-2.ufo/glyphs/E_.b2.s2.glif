@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="E.b2.s2" format="2">
+  <advance width="1627"/>
+  <outline>
+    <component base="EE.2"/>
+    <component base="PULLI.left" xOffset="816" yOffset="421"/>
+  </outline>
+</glyph>

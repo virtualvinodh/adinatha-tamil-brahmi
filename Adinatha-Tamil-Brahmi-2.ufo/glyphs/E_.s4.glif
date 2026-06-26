@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="E.s4" format="2">
+  <advance width="1461"/>
+  <outline>
+    <component base="EE"/>
+    <component base="PULLI.inside" xOffset="276" yOffset="-153"/>
+  </outline>
+</glyph>

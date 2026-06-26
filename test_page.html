@@ -2,9 +2,12 @@
     <head>
         <meta charset="utf-8"/>
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <script src="variants.js"></script>
 
         <script>
             function onLoad() {
+              buildVariantTabs();
+              changeFontSize(document.getElementById('inputfont').value);
               queryString = window.location.search
               const tab = queryString.split('=')[1]
               if (typeof tab !== 'undefined') {
@@ -23,9 +26,14 @@
                   }
             }
             function changeFontSize(size) {
-                x = document.getElementsByClassName("sharada");
+                var sizeVal = size + 'px';
+                x = document.getElementsByClassName("fontsharada");
                 for (i = 0; i < x.length; i++) {
-                x[i].style.fontSize=size;
+                x[i].style.fontSize=sizeVal;
+              }
+                x = document.querySelectorAll('.cv-table td');
+                for (i = 0; i < x.length; i++) {
+                x[i].style.fontSize=sizeVal;
               }
             }
 
@@ -60,6 +68,180 @@
               document.getElementById(tabName).style.display = "block";
               document.getElementById('tab' + tabName).className += " w3-grey";
             }
+            function buildVariantTabs() {
+              var S = String.fromCodePoint;
+              var V = ATB.V; var cons = ATB.cons; var vsigns = ATB.vsigns;
+
+              // TAB 1: Simple consonant × variant table
+              var maxVS = 0;
+              for (var ci = 0; ci < cons.length; ci++) maxVS = Math.max(maxVS, cons[ci].cvs.length);
+              var t1 = '<div style="overflow-x:auto"><table class="cv-table"><thead><tr>';
+              t1 += '<th>cons</th>';
+              for (var vi = 0; vi < maxVS; vi++) t1 += '<th>' + (vi === 0 ? 'default' : 'VS' + vi) + '</th>';
+              t1 += '</tr></thead><tbody>';
+              for (var ci = 0; ci < cons.length; ci++) {
+                var c = cons[ci];
+                t1 += '<tr><th style="font-size:10px;background:#f8f8f8">' + c.n + '</th>';
+                for (var vi = 0; vi < maxVS; vi++) {
+                  if (vi < c.cvs.length) {
+                    t1 += '<td title="' + c.cvs[vi].l + '">' + c.u + c.cvs[vi].vs + '</td>';
+                  } else {
+                    t1 += '<td></td>';
+                  }
+                }
+                t1 += '</tr>';
+              }
+              t1 += '</tbody></table></div>';
+              document.getElementById('cons-vars').innerHTML = t1;
+
+              // TAB 2: All consonants + variant signs (VS character embedded in sign sequence)
+              var t2 = '';
+              for (var si = 0; si < vsigns.length; si++) {
+                var vs = vsigns[si];
+                if (vs.cvs.length <= 1) continue;
+                t2 += '<p class="cv-section-head">+' + vs.n + ' variants</p>';
+                t2 += '<div style="overflow-x:auto"><table class="cv-table"><tr>';
+                t2 += '<th>consonant</th>';
+                for (var vi = 0; vi < vs.cvs.length; vi++) t2 += '<th>' + vs.cvs[vi].l + '</th>';
+                t2 += '</tr>';
+                for (var ci = 0; ci < cons.length; ci++) {
+                  var c = cons[ci];
+                  t2 += '<tr><th style="font-size:10px;background:#f8f8f8">' + c.n + '</th>';
+                  for (var vi = 0; vi < vs.cvs.length; vi++) {
+                    var vcv = vs.cvs[vi];
+                    var show = vcv.after ? vcv.after.indexOf(c.n) >= 0
+                             : vcv.exclude ? vcv.exclude.indexOf(c.n) < 0
+                             : true;
+                    t2 += show ? '<td>' + c.u + vs.u + vcv.vs + '</td>' : '<td></td>';
+                  }
+                  t2 += '</tr>';
+                }
+                t2 += '</table></div>';
+              }
+              document.getElementById('sign-vars').innerHTML = t2;
+
+              // TAB 3: Variant consonant × variant sign (VS for both)
+              var signCols = [];
+              for (var si = 0; si < vsigns.length; si++) {
+                var vs = vsigns[si];
+                for (var vi = 0; vi < vs.cvs.length; vi++) {
+                  signCols.push({sn: vs.n, su: vs.u, vl: vs.cvs[vi].l, vs: vs.cvs[vi].vs, after: vs.cvs[vi].after, exclude: vs.cvs[vi].exclude});
+                }
+              }
+              var t3 = '';
+              for (var ci = 0; ci < cons.length; ci++) {
+                var c = cons[ci];
+                if (c.cvs.length <= 1) continue;
+                t3 += '<p class="cv-section-head">' + c.n + ' × sign variants</p>';
+                t3 += '<div style="overflow-x:auto"><table class="cv-table"><tr>';
+                t3 += '<th>cons\\sign</th>';
+                for (var sc = 0; sc < signCols.length; sc++) t3 += '<th>+' + signCols[sc].sn + '<br><small>' + signCols[sc].vl + '</small></th>';
+                t3 += '</tr>';
+                for (var ki = 0; ki < c.cvs.length; ki++) {
+                  var cv = c.cvs[ki];
+                  t3 += '<tr><th style="font-size:10px;background:#f8f8f8">' + cv.l + '</th>';
+                  for (var sc = 0; sc < signCols.length; sc++) {
+                    var scol = signCols[sc];
+                    var show = scol.after ? scol.after.indexOf(c.n) >= 0
+                             : scol.exclude ? scol.exclude.indexOf(c.n) < 0
+                             : true;
+                    t3 += show ? '<td>' + c.u + cv.vs + scol.su + scol.vs + '</td>' : '<td></td>';
+                  }
+                  t3 += '</tr>';
+                }
+                t3 += '</table></div>';
+              }
+              document.getElementById('both-vars').innerHTML = t3;
+
+
+
+              // VOWELS TAB
+              (function() {
+                var S2 = String.fromCodePoint;
+                function findCons(n) { return ATB.cons.find(function(c){return c.n===n;}); }
+
+                // All vowel rows: pull from ATB.cons where available, else hardcode
+                var vowelRows = [
+                  findCons('A')  || {n:'A',  u:S2(0x11005), cvs:[{l:'default',vs:''}]},
+                  findCons('I')  || {n:'I',  u:S2(0x11007), cvs:[{l:'default',vs:''}]},
+                  {n:'II', u:S2(0x11008), cvs:[{l:'default',vs:''}]},
+                  {n:'U',  u:S2(0x11009), cvs:[{l:'default',vs:''}]},
+                  {n:'UU', u:S2(0x1100A), cvs:[{l:'default',vs:''}]},
+                  findCons('EE') || {n:'EE', u:S2(0x1100F), cvs:[{l:'default',vs:''}]},
+                  {n:'OO', u:S2(0x11011), cvs:[{l:'default',vs:''}]},
+                  {n:'AU', u:S2(0x11012), cvs:[{l:'default',vs:''}]},
+                  findCons('AA') || {n:'AA', u:S2(0x11006), cvs:[{l:'default',vs:''}]},
+                  findCons('AI') || {n:'AI', u:S2(0x11010), cvs:[{l:'default',vs:''}]},
+                  findCons('E')  || {n:'E',  u:S2(0x11071), cvs:[{l:'default',vs:''}]},
+                  findCons('O')  || {n:'O',  u:S2(0x11072), cvs:[{l:'default',vs:''}]}
+                ];
+
+                var maxCols = 0;
+                for (var i = 0; i < vowelRows.length; i++) maxCols = Math.max(maxCols, vowelRows[i].cvs.length);
+
+                var html = '<div style="overflow-x:auto"><table class="cv-table"><thead><tr>';
+                html += '<th>vowel</th>';
+                for (var ci = 0; ci < maxCols; ci++) html += '<th>' + (ci === 0 ? 'default' : 'VS' + ci) + '</th>';
+                html += '</tr></thead><tbody>';
+                for (var i = 0; i < vowelRows.length; i++) {
+                  var row = vowelRows[i];
+                  if (!row) continue;
+                  html += '<tr><th style="font-family:sans-serif;font-size:10px;background:#f4f4f4">' + row.n + '</th>';
+                  for (var ci = 0; ci < maxCols; ci++) {
+                    if (ci < row.cvs.length) {
+                      html += '<td title="' + row.cvs[ci].l + '">' + row.u + row.cvs[ci].vs + '</td>';
+                    } else {
+                      html += '<td></td>';
+                    }
+                  }
+                  html += '</tr>';
+                }
+                html += '</tbody></table></div>';
+
+                document.getElementById('vowels').innerHTML = html;
+              })();
+
+              // SYLLABLE TABLE: consonant × vowel sign matrix (transposable)
+              // Only consonants with syl:true (excludes vowel letters A, AA, EE)
+              window.sylTransposed = false;
+              window.buildSyllableTable = function() {
+                var sylcons = cons.filter(function(c) { return c.syl !== false; });
+                var html = '<button onclick="sylTransposed=!sylTransposed;buildSyllableTable()" '
+                  + 'style="font-family:sans-serif;font-size:11px;margin-bottom:6px;cursor:pointer">'
+                  + (sylTransposed ? 'Consonants → rows' : 'Signs → rows') + ' (transpose)</button>'
+                  + '<div style="overflow:auto"><table class="cv-table syl-table"><thead><tr>';
+                if (!sylTransposed) {
+                  // rows = consonants, cols = signs
+                  html += '<th></th><th style="min-width:28px">—</th>';
+                  for (var si = 0; si < vsigns.length; si++) html += '<th>' + vsigns[si].n + '</th>';
+                  html += '</tr></thead><tbody>';
+                  for (var ci = 0; ci < sylcons.length; ci++) {
+                    var c = sylcons[ci];
+                    html += '<tr><th style="font-size:10px;font-family:sans-serif;background:#f4f4f4">' + c.n + '</th>';
+                    html += '<td>' + c.u + '</td>';
+                    for (var si = 0; si < vsigns.length; si++) html += '<td>' + c.u + vsigns[si].u + '</td>';
+                    html += '</tr>';
+                  }
+                } else {
+                  // rows = signs, cols = consonants
+                  html += '<th></th>';
+                  for (var ci = 0; ci < sylcons.length; ci++) html += '<th>' + sylcons[ci].n + '</th>';
+                  html += '</tr></thead><tbody>';
+                  html += '<tr><th style="font-size:10px;font-family:sans-serif;background:#f4f4f4">—</th>';
+                  for (var ci = 0; ci < sylcons.length; ci++) html += '<td>' + sylcons[ci].u + '</td>';
+                  html += '</tr>';
+                  for (var si = 0; si < vsigns.length; si++) {
+                    var s = vsigns[si];
+                    html += '<tr><th style="font-size:10px;font-family:sans-serif;background:#f4f4f4">' + s.n + '</th>';
+                    for (var ci = 0; ci < sylcons.length; ci++) html += '<td>' + sylcons[ci].u + s.u + '</td>';
+                    html += '</tr>';
+                  }
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('syllable-table').innerHTML = html;
+              }
+              buildSyllableTable();
+            }
             </script>
 
         <style>
@@ -84,6 +266,13 @@
                 height: 200px;
                 width: 800px;
             }
+            .cv-table { border-collapse: collapse; margin: 3px 0; }
+            .cv-table th, .cv-table td { border: 1px solid #ccc; padding: 6px 12px; text-align: center; min-width: 38px; }
+            .cv-table th { background: #eee; font-family: sans-serif; font-size: 10px; font-weight: normal; }
+            .cv-section-head { font-family: sans-serif; font-size: 12px; color: #444; margin: 14px 0 3px; font-weight: bold; }
+            .syl-table td, .syl-table th { padding: 4px 8px; min-width: 28px; }
+            .syl-table thead th { position: sticky; top: 0; background: #eee; z-index: 1; }
+            .syl-table tr th:first-child { position: sticky; left: 0; background: #f4f4f4; z-index: 2; }
             </style>
 </head>
 
@@ -91,13 +280,17 @@
         <div class="w3-sidebar w3-bar-block w3-light-grey w3-card" style="width:130px;padding-left: 10px;">
             <small>
               <button class="w3-bar-item w3-button tablink" id="tabhome" onclick="openTab(event, 'home')">Home</button>
-              <button class="w3-bar-item w3-button tablink" id="tabText-Basic" onclick="openTab(event, 'Text-Basic')">Basic</button>
               <button class="w3-bar-item w3-button tablink" id="tabText-Basic-2" onclick="openTab(event, 'Text-Basic-2')" style="display:none">Basic 2</button>
               <button class="w3-bar-item w3-button tablink" id="tabText-Tamil" onclick="openTab(event, 'Tamil')" style="display:none">Basic 2</button>
+              <button class="w3-bar-item w3-button tablink" id="tabvowels" onclick="openTab(event, 'vowels')">Vowels</button>
+              <button class="w3-bar-item w3-button tablink" id="tabcons-vars" onclick="openTab(event, 'cons-vars')">Consonants</button>
+              <button class="w3-bar-item w3-button tablink" id="tabsign-vars" onclick="openTab(event, 'sign-vars')">Sign Vars</button>
+              <button class="w3-bar-item w3-button tablink" id="tabboth-vars" onclick="openTab(event, 'both-vars')">Both</button>
+              <button class="w3-bar-item w3-button tablink" id="tabsyllable-table" onclick="openTab(event, 'syllable-table')">Syllable</button>
             </small>
           </div>
           <div style="margin-left:150px;margin-top: 10px;margin-right:30px">
-            Font Size: <input id="inputfont" type="range" oninput="changeFontSize(this.value)" min="10" max="100" value="25" step="2"/>
+            Font Size: <input id="inputfont" type="range" oninput="changeFontSize(this.value)" min="10" max="100" value="45" step="2"/>
             Line Height: <input id="inputline" type="range" oninput="changeLineSize(this.value)" min="0" max="3" value="2" step="0.1"/>
 
 
@@ -106,7 +299,7 @@
 
             <hr/>
              <div class="sharada fontsharada" id="home">
-              <h1 class="fontsharada">வஜ்ரநந்தி தமிழ் : Test Page</h1>
+              <h1 class="fontsharada">Adinatha Tamil Brahmi 2 : Test Page</h1>
               <hr/>
               𑀘𑀸𑀘𑁳 𑀘𑀫𑁳 𑀘𑀸𑀫𑁳 𑀝𑀼𑀫𑁳 𑀭𑀽𑀵𑁳 𑁵𑁰 𑀜𑁰𑀝𑁰<br/>
               𑀓𑀗𑀘𑀜𑀝𑀡𑀢𑀦𑀧𑀫𑀬𑀭𑀮𑀯𑀵𑁵𑀶𑀷𑀚𑀲𑀱𑀳𑀰<br/>
@@ -177,24 +370,6 @@
 <br/>
 </div>
 
-<div id="Text-Basic" class="sharada fontsharada" style="display:none">
-  𑀓𑁵 𑀗𑁵 𑀘𑁵 𑀜𑀘𑁵 𑀝𑀘𑁵 𑀡𑀘𑁵 𑀢𑀘𑁵 𑀦𑀘𑁵 𑀧𑀘𑁵 𑀫𑀘𑁵 𑀬𑀘𑁵 𑀭𑀘𑁵 𑀮𑀘𑁵 𑀯𑀘𑁵 𑀵𑀘𑁵 𑁵𑀘𑁵 𑀶𑀘𑁵 𑀷𑀘𑁵 𑀚𑀘𑁵 𑀲𑀘𑁵 𑀱𑀘𑁵 𑀳𑀘𑁵 𑀰𑀘𑁵 <br/>
-  𑀓𑀸 𑀗𑀸 𑀘𑀸 𑀜𑀸 𑀝𑀸 𑀡𑀸 𑀢𑀸 𑀦𑀸 𑀧𑀸 𑀫𑀸 𑀬𑀸 𑀭𑀸 𑀮𑀸 𑀯𑀸 𑀵𑀸 𑁵𑀸 𑀶𑀸 𑀷𑀸 𑀚𑀸 𑀲𑀸 𑀱𑀸 𑀳𑀸 𑀰𑀸<br/>
-  𑀓𑀺 𑀗𑀺 𑀘𑀺 𑀜𑀺 𑀝𑀺 𑀡𑀺 𑀢𑀺 𑀦𑀺 𑀧𑀺 𑀫𑀺 𑀬𑀺 𑀭𑀺 𑀮𑀺 𑀯𑀺 𑀵𑀺 𑁵𑀺 𑀶𑀺 𑀷𑀺 𑀚𑀺 𑀲𑀺 𑀱𑀺 𑀳𑀺 𑀰𑀺<br/>
-  𑀓𑀻 𑀗𑀻 𑀘𑀻 𑀜𑀻 𑀝𑀻 𑀡𑀻 𑀢𑀻 𑀦𑀻 𑀧𑀻 𑀫𑀻 𑀬𑀻 𑀭𑀻 𑀮𑀻 𑀯𑀻 𑀵𑀻 𑁵𑀻 𑀶𑀻 𑀷𑀻 𑀚𑀻 𑀲𑀻 𑀱𑀻 𑀳𑀻 𑀰𑀻<br/>
-  𑀓𑀼 𑀗𑀼 𑀘𑀼 𑀜𑀼 𑀝𑀼 𑀡𑀼 𑀢𑀼 𑀦𑀼 𑀧𑀼 𑀫𑀼 𑀬𑀼 𑀭𑀼 𑀮𑀼 𑀯𑀼 𑀵𑀼 𑁵𑀼 𑀶𑀼 𑀷𑀼 𑀚𑀼 𑀲𑀼 𑀱𑀼 𑀳𑀼 𑀰𑀼<br/>
-  𑀓𑀽 𑀗𑀽 𑀘𑀽 𑀜𑀽 𑀝𑀽 𑀡𑀽 𑀢𑀽 𑀦𑀽 𑀧𑀽 𑀫𑀽 𑀬𑀽 𑀭𑀽 𑀮𑀽 𑀯𑀽 𑀵𑀽 𑁵𑀽 𑀶𑀽 𑀚𑀽 𑀷𑀽 𑀲𑀽 𑀱𑀽 𑀳𑀽 𑀰𑀽<br/>
-  𑀓𑁳 𑀗𑁳 𑀘𑁳 𑀜𑁳 𑀝𑁳 𑀡𑁳 𑀢𑁳 𑀦𑁳 𑀧𑁳 𑀫𑁳 𑀬𑁳 𑀭𑁳 𑀮𑁳 𑀯𑁳 𑀵𑁳 𑁵𑁳 𑀶𑁳 𑀷𑁳 𑀚𑁳 𑀲𑁳 𑀱𑁳 𑀳𑁳 𑀰𑁳<br/>
-  𑀓𑁂 𑀗𑁂 𑀘𑁂 𑀜𑁂 𑀝𑁂 𑀡𑁂 𑀢𑁂 𑀦𑁂 𑀧𑁂 𑀫𑁂 𑀬𑁂 𑀭𑁂 𑀮𑁂 𑀯𑁂 𑀵𑁂 𑁵𑁂 𑀶𑁂 𑀷𑁂 𑀚𑁂 𑀲𑁂 𑀱𑁂 𑀳𑁂 𑀰𑁂<br/>
-  𑀓𑁃 𑀗𑁃 𑀘𑁃 𑀜𑁃 𑀝𑁃 𑀡𑁃 𑀢𑁃 𑀦𑁃 𑀧𑁃 𑀫𑁃 𑀬𑁃 𑀭𑁃 𑀮𑁃 𑀯𑁃 𑀵𑁃 𑁵𑁃 𑀶𑁃 𑀷𑁃 𑀚𑁃 𑀲𑁃 𑀱𑁃 𑀳𑁃 𑀰𑁃<br/>
-  𑀓𑁴 𑀗𑁴 𑀘𑁴 𑀜𑁴 𑀝𑁴 𑀡𑁴 𑀢𑁴 𑀦𑁴 𑀧𑁴 𑀫𑁴 𑀬𑁴 𑀭𑁴 𑀮𑁴 𑀯𑁴 𑀵𑁴 𑁵𑁴 𑀶𑁴 𑀷𑁴 𑀚𑁴 𑀲𑁴 𑀱𑁴 𑀳𑁴 𑀰𑁴<br/>
-  𑀓𑁄 𑀗𑁄 𑀘𑁄 𑀜𑁄 𑀝𑁄 𑀡𑁄 𑀢𑁄 𑀦𑁄 𑀧𑁄 𑀫𑁄 𑀬𑁄 𑀭𑁄 𑀮𑁄 𑀯𑁄 𑀵𑁄 𑁵𑁄 𑀶𑁄 𑀷𑁄 𑀚𑁄 𑀲𑁄 𑀱𑁄 𑀳𑁄 𑀰𑁄<br/>
-  𑀓𑁅 𑀗𑁅 𑀘𑁅 𑀜𑁅 𑀝𑁅 𑀡𑁅 𑀢𑁅 𑀦𑁅 𑀧𑁅 𑀫𑁅 𑀬𑁅 𑀭𑁅 𑀮𑁅 𑀯𑁅 𑀵𑁅 𑁵𑁅 𑀶𑁅 𑀷𑁅 𑀚𑁅 𑀲𑁅 𑀱𑁅 𑀳𑁅 𑀰𑁅<br/>
-  </div>
-
-<div id="Text-Basic-2" class="sharada fontsharada"  style="display:none">
-
-</div>
 
 <div id="Tamil" class="sharada fontsharada" style="display: none">
   வச்சணந்தி மாலை என்னும் வெண்பாப் பாட்டியலும் வரையறுத்தப் பாட்டியலும்<br/>
@@ -335,6 +510,12 @@
 </div>
 
 </div>
+
+<div id="vowels" class="sharada fontsharada" style="display:none;padding:8px"></div>
+<div id="syllable-table" class="sharada fontsharada" style="display:none;padding:8px"></div>
+<div id="cons-vars" class="sharada fontsharada" style="display:none;padding:8px"></div>
+<div id="sign-vars" class="sharada fontsharada" style="display:none;padding:8px"></div>
+<div id="both-vars" class="sharada fontsharada" style="display:none;padding:8px"></div>
 
 </div>
 
