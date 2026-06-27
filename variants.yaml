@@ -401,3 +401,7 @@ signs:
     unicode: "0x11045"
     variants:
       - { glyph: WAU.protr.alt, label: "protr.", vs: 1 }
+ligatures:
+
+  - name: JAA
+    glyph: JAA

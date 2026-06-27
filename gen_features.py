@@ -30,6 +30,15 @@ VS_END     = '# <<VS_END>>'
 DIST_START = '# <<DIST_START>>'
 DIST_END   = '# <<DIST_END>>'
 
+# Unicode ranges considered "blank" (invisible / zero-width placeholders)
+_BLANK_RANGES = [
+    (0x0000, 0x001F),    # control characters (LF, CR, etc.)
+    (0x0020, 0x0020),    # space
+    (0x00A0, 0x00A0),    # non-breaking space
+    (0xFE00, 0xFE0F),    # VS1–VS16
+    (0xE0100, 0xE01EF),  # VS17–VS256
+]
+
 # VS1-VS16: U+FE00-U+FE0F  |  VS17-VS256: U+E0100-U+E01EF
 def _vs_char(n):
     """Return the Unicode character for VS n (1-indexed). 0 = no VS (default)."""
@@ -94,6 +103,82 @@ def patch_between(text, start_marker, end_marker, new_content):
 
 def _js_str(s):
     return "'" + s.replace('\\', '\\\\').replace("'", "\\'") + "'"
+
+# ── auto class generation ─────────────────────────────────────────────────────
+
+def _read_unicode_cps(path):
+    root = ET.parse(path).getroot()
+    return [int(u.get('hex', '0'), 16) for u in root.findall('unicode') if u.get('hex')]
+
+def _blank_glyph_set(contents):
+    result = set()
+    for gname, fname in contents.items():
+        path = os.path.join(GLYPHS_DIR, fname)
+        if not os.path.exists(path):
+            continue
+        cps = _read_unicode_cps(path)
+        if cps and all(any(lo <= cp <= hi for lo, hi in _BLANK_RANGES) for cp in cps):
+            result.add(gname)
+    return result
+
+def _otmark_glyph_list(data):
+    seen, order = set(), []
+    for s in data.get('signs', []):
+        for g in [s['glyph']] + [v['glyph'] for v in s.get('variants', [])] + s.get('contextual', []):
+            if g not in seen:
+                seen.add(g)
+                order.append(g)
+    return order
+
+def gen_classes(data, contents):
+    """Return {class_name: [glyph, ...]} for all auto-generated classes."""
+    # @cons.all / @cons.basic — consonants only (syllable is not False)
+    cons_all, cons_basic, seen = [], [], set()
+    for c in data.get('consonants', []):
+        if c.get('syllable') is False:
+            continue
+        base = c['glyph']
+        if base not in seen:
+            cons_all.append(base)
+            cons_basic.append(base)
+            seen.add(base)
+        for v in c.get('variants', []):
+            g = v['glyph']
+            if g not in seen:
+                cons_all.append(g)
+                seen.add(g)
+    for lig in data.get('ligatures', []):
+        base = lig['glyph']
+        if base not in seen:
+            cons_all.append(base)
+            seen.add(base)
+        for v in lig.get('variants', []):
+            g = v['glyph']
+            if g not in seen:
+                cons_all.append(g)
+                seen.add(g)
+
+    otmark_list = _otmark_glyph_list(data)
+    otmark_set  = set(otmark_list)
+    blank_set   = _blank_glyph_set(contents)
+    blank_list  = sorted(blank_set)
+    noblank_list = sorted(g for g in contents.keys() if g not in blank_set and g not in otmark_set)
+
+    return {
+        'cons.all':   cons_all,
+        'cons.basic': cons_basic,
+        'otmark':     otmark_list,
+        'blank':      blank_list,
+        'noblank':    noblank_list,
+    }
+
+def replace_class(fea_text, class_name, glyphs):
+    pattern = r'@' + re.escape(class_name) + r'[ \t]*=[ \t]*\[.*?\];'
+    replacement = '@' + class_name + ' = [' + ' '.join(glyphs) + '];'
+    result, n = re.subn(pattern, replacement, fea_text, flags=re.DOTALL)
+    if n == 0:
+        print(f'WARNING: class @{class_name} not found in features.fea', file=sys.stderr)
+    return result
 
 # ── GLIF helpers ──────────────────────────────────────────────────────────────
 
@@ -217,68 +302,203 @@ def _sign_info(data, contents):
                 result.append((sg, mx, min_x, min_y, max_y))
     return result
 
-def _cons_info(data, contents):
-    """Return list of (glyph_name, ax, cons_min_x) for consonants + variants."""
-    result = []
-    for section in ('consonants', 'independent_vowels'):
+def _cons_anchors(data, contents):
+    """Return {glyph_name: {anchor_name: (x,y), ...}} for all consonant glyphs."""
+    result = {}
+    for section in ('consonants', 'independent_vowels', 'ligatures'):
         for c in data.get(section, []):
             for cg in [c['glyph']] + [v['glyph'] for v in c.get('variants', [])]:
                 cp = _glif_path(cg, contents)
-                if not cp or not os.path.exists(cp):
-                    continue
-                ca = _read_anchors(cp)
-                ax = next((v[0] for k, v in ca.items() if not k.startswith('_')), None)
-                if ax is None:
-                    continue
-                bb = _read_bbox(cp)
-                cons_min_x = bb[0] if bb else 0
-                result.append((cg, ax, cons_min_x))
+                if cp and os.path.exists(cp):
+                    result[cg] = _read_anchors(cp)
     return result
 
 def gen_dist_auto(data, contents):
-    """Generate dist lookup for left-protruding signs.
+    """Generate dist lookup by placing each sign on each consonant via anchor geometry.
 
-    Adjustment = max(0, sign_overhang - (cons_anchor_x - cons_bbox_left))
-    Only emits rules where the sign actually extends past the consonant's ink left edge.
-    Skips (cons, sign) pairs where the sign's y-range is entirely in the top zone
-    (y > 1432) and the consonant has no ink there — no real visual collision.
+    For every (consonant, sign) anchor pair:
+      - Compute sign's left edge in consonant coordinates
+      - If < 0: sign protrudes LEFT  → pos @noblank' CONS SIGN adj  (advance preceding glyph)
+      - Compute sign's right edge in consonant coordinates
+      - If > advance: sign protrudes RIGHT → pos CONS' SIGN adj  (advance current glyph)
     """
-    signs = _sign_info(data, contents)
-    cons  = _cons_info(data, contents)
+    cons_map = _cons_anchors(data, contents)
 
-    rules = []
-    for sg, mx, s_min_x, s_min_y, s_max_y in signs:
-        sign_zones = _y_zones(s_min_y, s_max_y)
-        overhang = mx - s_min_x
-        for cg, ax, c_min_x in cons:
-            # sign left edge relative to consonant origin = ax - mx + s_min_x
-            sign_left = ax - mx + s_min_x
-            adj = max(0, round(c_min_x - sign_left))
-            if adj <= 0:
-                continue
-            # skip if sign only in top zone (pulli/top mark won't collide with consonant body)
-            if sign_zones == {'top'}:
-                continue
-            rules.append((cg, sg, adj))
+    # Build sign maps:
+    #   sign_map_left  — includes contextual forms (needed for e.g. WAI.mid left protrusion)
+    #   sign_map_right — base + variants only (contextual forms in clusters have their own spacing)
+    sign_map_left  = {}
+    sign_map_right = {}
+    for s in data.get('signs', []):
+        all_glyphs  = [s['glyph']] + [v['glyph'] for v in s.get('variants', [])] + s.get('contextual', [])
+        for sg in all_glyphs:
+            sp = _glif_path(sg, contents)
+            if not sp or not os.path.exists(sp): continue
+            sa = _read_anchors(sp)
+            bb = _read_bbox(sp)
+            if bb is None: continue
+            for k, (ax, ay) in sa.items():
+                if k.startswith('_'):
+                    entry = (sg, ax, ay, bb[0], bb[1], bb[2], bb[3])
+                    sign_map_left.setdefault(k[1:], []).append(entry)
+                    sign_map_right.setdefault(k[1:], []).append(entry)
+
+    # All consonant glyphs — for 4-glyph cluster rules
+    all_cons_glyphs = []
+    for c in data.get('consonants', []):
+        all_cons_glyphs.append(c['glyph'])
+        for v in c.get('variants', []):
+            all_cons_glyphs.append(v['glyph'])
+
+    # Buffer added to left protrusion when the left-protruding sign's Y zone
+    # overlaps with a right-protruding sign's Y zone (signs face each other).
+    # bare    = CONS1 bare (no vowel sign) → dist_auto_left
+    # cluster = CONS1 has vowel sign (WAA etc.) → dist_auto_left_vs (facing signs more likely)
+    LEFT_BUFFER_BARE    = 100
+    LEFT_BUFFER_CLUSTER = 200
+    # Extra buffer delta per sign base name (covers all variants via sg.split('.')[0])
+    SIGN_BUFFER_DELTA = {
+        'WE': 50,   # WE, WE.mid — top-zone, commonly faces WAA
+    }
+    RIGHT_ZONE_MIN = 100  # minimum right protrusion to count toward zone tracking
+
+    # Pass 1: compute right rules and collect Y zones of all right-protruding signs
+    right_rules = {}  # (cg, sg) -> adj
+    right_zones = set()
+
+    for cg, ca in cons_map.items():
+        cp = _glif_path(cg, contents)
+        if not cp: continue
+        adv = _read_advance(cp)
+        for anchor_name, (cax, cay) in ca.items():
+            if anchor_name.startswith('_'): continue
+            for sg, sax, say, s_min_x, s_min_y, s_max_x, s_max_y in sign_map_right.get(anchor_name, []):
+                sign_right = cax - sax + s_max_x
+                if adv > 0 and sign_right > adv:
+                    adj = round(sign_right - adv)
+                    key = (cg, sg)
+                    if key not in right_rules or adj > right_rules[key]:
+                        right_rules[key] = adj
+                    if adj >= RIGHT_ZONE_MIN:
+                        right_zones |= _y_zones(s_min_y, s_max_y)
+
+    def _compute_left_rules(buffer):
+        rules = {}
+        for cg, ca in cons_map.items():
+            for anchor_name, (cax, cay) in ca.items():
+                if anchor_name.startswith('_'): continue
+                for sg, sax, say, s_min_x, s_min_y, s_max_x, s_max_y in sign_map_left.get(anchor_name, []):
+                    sign_left = cax - sax + s_min_x
+                    zones_overlap = bool(_y_zones(s_min_y, s_max_y) & right_zones)
+                    buf = buffer + SIGN_BUFFER_DELTA.get(sg.split('.')[0], 0)
+                    threshold = buf if zones_overlap else 0
+                    if sign_left < threshold:
+                        adj = round(threshold - sign_left) if zones_overlap else round(-sign_left)
+                        key = (cg, sg)
+                        if key not in rules or adj > rules[key][0]:
+                            rules[key] = (adj, anchor_name)
+        return rules
+
+    left_rules_bare    = _compute_left_rules(LEFT_BUFFER_BARE)
+    left_rules_cluster = _compute_left_rules(LEFT_BUFFER_CLUSTER)
 
     lines = ['# Auto-generated by gen_features.py — edit variants.yaml, not this block', '']
-    if rules:
-        lines.append('lookup dist_auto {')
-        for cg, sg, adj in sorted(rules, key=lambda r: (-r[2], r[0], r[1])):
-            lines.append(f"  pos @noblank' {cg} {sg} {adj};")
-        lines.append('} dist_auto;')
+
+    def _left_lookup(name, comment1, pat1, comment2, pat2, rules):
+        lines.append(f'lookup {name} {{')
+        lines.append(f'  # {comment1}')
+        for (cg, sg), (adj, _) in rules:
+            lines.append(f'  pos {pat1.format(cg=cg, sg=sg, adj=adj)};')
         lines.append('')
-        lines.append('lookup dist_auto;')
-        print(f'  dist_auto: {len(rules)} pair rule(s) generated')
-    else:
-        lines.append('# no left-protruding sign adjustments needed')
+        lines.append(f'  # {comment2}')
+        for (cg, sg), (adj, _) in rules:
+            lines.append(f'  pos {pat2.format(cg=cg, sg=sg, adj=adj)};')
+        lines.append(f'}} {name};')
+        lines.append('')
+        lines.append(f'lookup {name};')
+
+    if left_rules_bare or left_rules_cluster:
+        # Use cluster rules as the superset for decomp patterns (larger buffer)
+        sorted_left_bare    = sorted(left_rules_bare.items(),    key=lambda x: (-x[1][0], x[0][0], x[0][1]))
+        sorted_left_cluster = sorted(left_rules_cluster.items(), key=lambda x: (-x[1][0], x[0][0], x[0][1]))
+
+        # Decomp-product signs: WO→WAA+WE, WOO→WAA+WEE, WAU→WAA+WAI and all their variants
+        sorted_left_decomp = [(k, v) for k, v in sorted_left_cluster
+                              if k[1].startswith(('WE', 'WAI'))]
+
+        # All WAA variants (intermediate mark after WO/WOO/WAU decomp).
+        # @vs_aa only has WAA+WAA.protr.alt but @mida consonants (LLLA, etc.) trigger
+        # sub @mida WAA' by WAA.mid — so WAA.mid must also be covered here.
+        waa_variants = sorted(g for g in contents.keys() if g.startswith('WAA'))
+        waa_class = '[' + ' '.join(waa_variants) + ']'
+
+        # Lookup 1a: CONS1 CONS2 SIGN (bare — no vowel sign on CONS1)
+        lines.append('lookup dist_auto_left {')
+        lines.append('  # CONS1 CONS2 SIGN')
+        for (cg, sg), (adj, _) in sorted_left_bare:
+            lines.append(f"  pos @cons.all' {cg} {sg} {adj};")
+        lines.append('} dist_auto_left;')
+        lines.append('')
+        lines.append('lookup dist_auto_left;')
+        lines.append('')
+
+        # Lookup 1b: CONS1 VS CONS2 SIGN (cluster — CONS1 has a vowel sign, larger buffer)
+        lines.append('lookup dist_auto_left_vs {')
+        lines.append('  # CONS1 VS CONS2 SIGN')
+        for (cg, sg), (adj, _) in sorted_left_cluster:
+            lines.append(f"  pos @cons.all' @otmark {cg} {sg} {adj};")
+        lines.append('} dist_auto_left_vs;')
+        lines.append('')
+        lines.append('lookup dist_auto_left_vs;')
+        lines.append('')
+
+        # Lookup 2: SIGN after intermediate mark + preceding-has-1-mark + intermediate
+        # Use waa_class (all WAA variants) — @mida consonants trigger WAA→WAA.mid
+        # so @vs_aa=[WAA WAA.protr.alt] is not enough.
+        _left_lookup(
+            'dist_auto_left2',
+            'CONS1 CONS2 WAA SIGN  (WO-decomp on target)',
+            f"@cons.all' {{cg}} {waa_class} {{sg}} {{adj}}",
+            'CONS1 VS CONS2 WAA SIGN',
+            f"@cons.all' @otmark {{cg}} {waa_class} {{sg}} {{adj}}",
+            sorted_left_decomp,
+        )
+        lines.append('')
+
+        # Lookup 3: CONS1 VS VS CONS2 WAA SIGN (WO-decomp on source consonant)
+        lines.append('lookup dist_auto_left3 {')
+        lines.append('  # CONS1 VS VS CONS2 WAA SIGN  (WO-decomp on source)')
+        for (cg, sg), (adj, _) in sorted_left_decomp:
+            lines.append(f"  pos @cons.all' @otmark @otmark {cg} {waa_class} {sg} {adj};")
+        lines.append('} dist_auto_left3;')
+        lines.append('')
+        lines.append('lookup dist_auto_left3;')
+
+    if right_rules:
+        sorted_right = sorted(right_rules.items(), key=lambda x: (-x[1], x[0][0], x[0][1]))
+        lines.append('')
+        lines.append('lookup dist_auto_right {')
+        lines.append('  # right-protruding: advance current glyph')
+        for (cg, sg), adj in sorted_right:
+            lines.append(f"  pos {cg}' {sg} {adj};")
+        lines.append('} dist_auto_right;')
+        lines.append('')
+        lines.append('lookup dist_auto_right;')
+
+    if not left_rules_bare and not left_rules_cluster and not right_rules:
+        lines.append('# no sign protrusion adjustments needed')
+
+    n_bare    = len(left_rules_bare)
+    n_cluster = len(left_rules_cluster)
+    n_decomp  = len(sorted_left_decomp) if (left_rules_bare or left_rules_cluster) else 0
+    print(f'  dist_auto: {n_bare} bare + {n_cluster} cluster left (lookups 1a+1b) + {n_decomp} decomp (lookups 2+3) + {len(right_rules)} right rules')
 
     return '\n'.join(lines)
 
 def report_dist(data, contents):
     """Print a human-readable collision report for left-protruding signs."""
-    signs = _sign_info(data, contents)
-    cons  = _cons_info(data, contents)
+    signs    = _sign_info(data, contents)
+    cons_map = _cons_anchors(data, contents)
 
     print()
     print('LEFT-PROTRUDING SIGN COLLISION REPORT')
@@ -290,16 +510,21 @@ def report_dist(data, contents):
         zone_str = '+'.join(sorted(sign_zones))
         print(f'\n  {sg:25s}  overhang={overhang:4.0f}  zones={zone_str}')
 
+        sp = _glif_path(sg, contents)
+        sa = _read_anchors(sp)
+        mark_key = next((k[1:] for k in sa if k.startswith('_')), None)
         collisions = []
-        for cg, ax, c_min_x in cons:
-            sign_left = ax - mx + s_min_x
-            adj = max(0, round(c_min_x - sign_left))
-            if adj > 0:
-                skipped = ' [SKIP: top-only zone]' if sign_zones == {'top'} else ''
-                collisions.append((cg, adj, skipped))
+        for cg, ca in cons_map.items():
+            if mark_key and mark_key not in ca:
+                continue
+            ax = ca[mark_key][0] if mark_key else 0
+            sign_left  = ax - mx + s_min_x
+            protrusion = max(0, -sign_left)
+            if protrusion > 0:
+                collisions.append((cg, round(protrusion), ''))
 
         if not collisions:
-            print(f'    -> no collisions past bbox_left')
+            print(f'    -> no collisions past origin')
         else:
             for cg, adj, note in sorted(collisions, key=lambda r: -r[1]):
                 print(f'    -> {cg:20s}  +{adj}{note}')
@@ -687,13 +912,18 @@ def main():
 
     fea_new = patch_between(fea, VS_START, VS_END,
                             gen_vs_rules(data, classes, composite_rules))
-    vs17plus = {f'VS{n}' for n in range(17, 27)}
-    fea_new = patch_blank_class(fea_new, vs17plus)
 
-    print('Generating dist rules...')
     import plistlib as _pl3
     with open(PLIST_PATH, 'rb') as _f3:
         _contents_dist = _pl3.load(_f3)
+
+    print('Generating classes...')
+    classes_map = gen_classes(data, _contents_dist)
+    for cname, glyphs in classes_map.items():
+        fea_new = replace_class(fea_new, cname, glyphs)
+    print('  ' + '  '.join(f'@{k}={len(v)}' for k, v in classes_map.items()))
+
+    print('Generating dist rules...')
     fea_new = patch_between(fea_new, DIST_START, DIST_END,
                             gen_dist_auto(data, _contents_dist))
 
