@@ -11,3 +11,22 @@
 # OS files
 Thumbs.db
 .DS_Store
+
+# Large personal files
+*.pdf
+*.docx
+
+# Inscription images (large, personal)
+transcribe/images/
+
+# Build artifacts
+master_ttf/
+__pycache__/
+*.pyc
+
+# PocketBase runtime
+backend/pb_data/
+backend/pocketbase
+
+# Claude internal
+.claude/

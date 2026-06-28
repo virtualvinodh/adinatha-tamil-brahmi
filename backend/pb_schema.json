@@ -1,0 +1,41 @@
+[
+  {
+    "name": "inscriptions",
+    "type": "base",
+    "fields": [
+      { "name": "title",  "type": "text", "required": true },
+      { "name": "image",  "type": "file", "required": true,
+        "options": { "maxSelect": 1, "maxSize": 20971520, "mimeTypes": ["image/jpeg","image/png","image/webp"] } },
+      { "name": "notes",  "type": "text", "required": false },
+      { "name": "author", "type": "text", "required": false }
+    ]
+  },
+  {
+    "name": "crops",
+    "type": "base",
+    "fields": [
+      { "name": "inscription", "type": "relation", "required": true,
+        "options": { "collectionId": "inscriptions", "cascadeDelete": true, "maxSelect": 1 } },
+      { "name": "fx",         "type": "number", "required": true },
+      { "name": "fy",         "type": "number", "required": true },
+      { "name": "fw",         "type": "number", "required": true },
+      { "name": "fh",         "type": "number", "required": true },
+      { "name": "rot",        "type": "number", "required": false },
+      { "name": "text",       "type": "text",   "required": false },
+      { "name": "sort_order", "type": "number", "required": false }
+    ]
+  },
+  {
+    "name": "lines",
+    "type": "base",
+    "fields": [
+      { "name": "crop", "type": "relation", "required": true,
+        "options": { "collectionId": "crops", "cascadeDelete": true, "maxSelect": 1 } },
+      { "name": "fy",         "type": "number", "required": true },
+      { "name": "fh",         "type": "number", "required": true },
+      { "name": "rot",        "type": "number", "required": false },
+      { "name": "text",       "type": "text",   "required": false },
+      { "name": "sort_order", "type": "number", "required": false }
+    ]
+  }
+]

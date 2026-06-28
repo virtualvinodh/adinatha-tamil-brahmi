@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brahmi Transcription</title>
+<script src="../variants.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #141414; color: #eee; height: 100vh; display: flex; overflow: hidden; }
+
+@font-face { font-family: 'ATB'; src: url('../master_ttf/Adinatha-Tamil-Brahmi-2.ttf'); }
+
+/* ── sidebar ── */
+#sidebar {
+  width: 110px; flex-shrink: 0;
+  background: #0d0d0d; border-right: 1px solid #252525;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#sidebar-head { padding: 8px 6px 4px; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+#thumb-list { overflow-y: auto; flex: 1; }
+.thumb { padding: 5px; cursor: pointer; border-bottom: 1px solid #1a1a1a; position: relative; }
+.thumb:hover { background: #1a1a1a; }
+.thumb.active { background: #1e2e1e; border-left: 3px solid #5a5; }
+.thumb img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 2px; background: #111; }
+.thumb-num { font-size: 10px; color: #555; text-align: center; padding: 2px 0; }
+.thumb-badge { position: absolute; top: 7px; right: 7px; background: #5a5; color: #000; font-size: 9px; font-weight: 700; border-radius: 8px; padding: 1px 5px; display: none; }
+.thumb.has-crops .thumb-badge { display: block; }
+.thumb.done .thumb-num { color: #5a5; }
+
+/* ── main column ── */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* ── toolbar ── */
+#toolbar { background: #111; border-bottom: 1px solid #252525; padding: 6px 12px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#page-label { font-size: 12px; color: #888; }
+#progress { font-size: 11px; color: #555; margin-left: auto; }
+.btn { padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.btn:hover { filter: brightness(1.2); }
+#btn-prev, #btn-next { background: #222; color: #bbb; }
+#btn-crop-mode { background: #1a3050; color: #7af; }
+#btn-view-inscriptions { background: #222; color: #aaa; }
+#btn-export { background: #1a1a1a; color: #666; }
+#btn-picker { background: #2a1a3a; color: #c8a; }
+#btn-picker.open { background: #c8a; color: #000; }
+
+/* ── content row ── */
+#content { flex: 1; display: flex; overflow: hidden; min-width: 0; }
+
+/* ── views pane ── */
+#views { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+
+/* crop view */
+#crop-view { position: absolute; inset: 0; display: none; overflow: auto; background: #0d0d0d; align-items: flex-start; justify-content: center; padding: 16px; }
+#crop-view.visible { display: flex; }
+#img-wrap { position: relative; display: inline-block; }
+#img-wrap.crop-mode { cursor: crosshair; }
+#main-img { display: block; max-width: 100%; }
+#cv { position: absolute; top: 0; left: 0; }
+#img-wrap.crop-mode #cv { pointer-events: auto; }
+#img-wrap.view-mode #cv { pointer-events: none; }
+
+/* inscription view */
+#inscription-view { position: absolute; inset: 0; display: none; overflow-y: auto; padding: 12px; gap: 12px; flex-direction: column; }
+#inscription-view.visible { display: flex; }
+#no-crops-msg { color: #444; font-size: 13px; text-align: center; padding: 40px; }
+
+/* crop card */
+.crop-card { background: #1c1c1c; border-radius: 6px; overflow: hidden; border: 1px solid #2a2a2a; flex-shrink: 0; }
+.card-header { display: flex; align-items: center; gap: 6px; background: #202020; padding: 5px 8px; font-size: 11px; color: #777; }
+.card-header .reg-num { font-weight: 700; color: #aaa; }
+.card-header .spacer { flex: 1; }
+.rot-btn { background: #2a2a2a; border: none; color: #aaa; cursor: pointer; font-size: 13px; width: 24px; height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+.rot-btn:hover { background: #3a3a3a; color: #fff; }
+.fs-btn, .iz-btn { background: #222; border: none; color: #aaa; cursor: pointer; font-size: 11px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
+.fs-btn:hover, .iz-btn:hover { background: #333; color: #fff; }
+.fs-num, .iz-num { font-size: 10px; color: #666; min-width: 28px; text-align: center; }
+.redraw-btn { background: #2a2a1a; border: none; color: #aa8; cursor: pointer; font-size: 11px; padding: 2px 6px; border-radius: 3px; }
+.redraw-btn:hover { background: #3a3a1a; color: #dd6; }
+.del-btn { background: none; border: none; color: #444; cursor: pointer; font-size: 12px; padding: 0 2px; }
+.del-btn:hover { color: #f55; }
+.crop-img-wrap { background: #fff; overflow-x: auto; overflow-y: hidden; position: relative; }
+.crop-img-wrap canvas { display: block; height: auto; }
+.line-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: ns-resize; display: none; }
+.crop-img-wrap.line-mode .line-overlay { display: block; }
+
+/* line cards */
+.lines-section { display: flex; flex-direction: column; }
+.line-card { border-top: 1px solid #2a2a2a; }
+.line-card-img { background: #fff; overflow-x: auto; }
+.line-card-img canvas { display: block; width: 100%; height: auto; }
+.line-hdr { display: flex; align-items: center; gap: 4px; background: #1a1a1a; padding: 3px 8px; font-size: 10px; color: #666; }
+.line-hdr .line-num { color: #888; font-weight: 700; }
+.line-del { background: none; border: none; color: #444; cursor: pointer; font-size: 11px; margin-left: auto; }
+.line-del:hover { color: #f55; }
+.line-mode-btn { font-size: 10px; padding: 2px 6px; background: #1a2a1a; border: none; color: #6a6; cursor: pointer; border-radius: 3px; }
+.line-mode-btn.active { background: #6a6; color: #000; }
+.card-render { font-family: 'ATB', serif; font-size: 28px; line-height: 2; background: #fafafa; color: #000; padding: 4px 10px; min-height: 48px; word-break: break-all; text-align: left; white-space: pre-wrap; border-top: 1px solid #ddd; display: none; }
+.card-render:not(:empty) { display: block; }
+.card-input { font-family: 'ATB', serif; font-size: 20px; line-height: 1.7; background: #111; color: #ccc; border: none; border-top: 1px solid #252525; padding: 6px 10px; resize: none; width: 100%; min-height: 48px; outline: none; direction: ltr; text-align: left; }
+.card-input:focus { background: #0a150a; }
+
+/* ── picker panel ── */
+#picker-panel {
+  width: 0; flex-shrink: 0; overflow: hidden;
+  background: #0f0f0f; border-left: 1px solid #252525;
+  display: flex; flex-direction: column;
+  transition: width 0.18s ease;
+}
+#picker-panel.open { width: 280px; }
+
+/* breadcrumb */
+#pk-crumb {
+  flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px; background: #111; border-bottom: 1px solid #222;
+  min-height: 38px;
+}
+#pk-crumb-text {
+  font-family: 'ATB', serif; font-size: 22px; flex: 1;
+  color: #eee; letter-spacing: 2px;
+}
+#pk-crumb-name { font-size: 10px; color: #666; }
+.pk-crumb-btn {
+  background: none; border: 1px solid #333; color: #888;
+  border-radius: 3px; font-size: 10px; padding: 2px 6px; cursor: pointer;
+}
+.pk-crumb-btn:hover { color: #fff; border-color: #555; }
+
+/* step header */
+#pk-step-hdr {
+  flex-shrink: 0; padding: 6px 8px 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+#pk-step-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+#pk-back, #pk-next-syl { background: none; border: none; color: #666; font-size: 11px; cursor: pointer; padding: 2px 4px; }
+#pk-back:hover, #pk-next-syl:hover { color: #aaa; }
+
+/* type tabs (step 1 only) */
+#pk-type-tabs { display: flex; flex-shrink: 0; border-bottom: 1px solid #1e1e1e; }
+.pttab { flex: 1; padding: 5px 4px; background: none; border: none; color: #555; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; }
+.pttab:hover { color: #888; }
+.pttab.active { color: #c8a; border-bottom-color: #c8a; }
+
+/* char grids */
+#pk-grid { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; }
+
+.pk-char {
+  font-family: 'ATB', serif; font-size: 24px; line-height: 1;
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #ddd;
+  border-radius: 4px; padding: 5px 6px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 42px;
+}
+.pk-char:hover { background: #252525; border-color: #555; }
+.pk-char.sel { background: #1a2510; border-color: #c8a; color: #fff; }
+.pk-char span.nl { font-family: sans-serif; font-size: 9px; color: #555; line-height: 1.2; text-align: center; }
+.pk-char.sel span.nl { color: #c8a; }
+
+.pk-section {
+  width: 100%; font-size: 10px; color: #555; text-transform: uppercase;
+  letter-spacing: 1px; padding: 8px 0 4px; margin-top: 4px;
+}
+/* "Done / skip sign" button inside grid */
+.pk-done {
+  background: #111; border: 1px dashed #333; color: #666;
+  border-radius: 4px; padding: 5px 8px; cursor: pointer; font-size: 11px;
+  align-self: flex-start;
+}
+.pk-done:hover { color: #aaa; border-color: #666; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-head">Pages</div>
+  <div id="thumb-list"></div>
+</div>
+
+<div id="main">
+  <div id="toolbar">
+    <span id="page-label"></span>
+    <button class="btn" id="btn-prev">← Prev</button>
+    <button class="btn" id="btn-next">Next →</button>
+    <button class="btn" id="btn-crop-mode">✂ Crop mode</button>
+    <span id="zoom-controls" style="display:none;align-items:center;gap:4px;">
+      <button class="btn" id="btn-zoom-out" style="background:#222;color:#aaa;padding:4px 8px;">−</button>
+      <span id="zoom-label" style="font-size:11px;color:#666;min-width:36px;text-align:center;"></span>
+      <button class="btn" id="btn-zoom-in" style="background:#222;color:#aaa;padding:4px 8px;">+</button>
+      <button class="btn" id="btn-zoom-fit" style="background:#222;color:#888;padding:4px 8px;">Fit</button>
+    </span>
+    <button class="btn" id="btn-view-inscriptions">☰ Inscriptions</button>
+    <button class="btn" id="btn-upload" style="display:none;background:#1a2030;color:#68a;">↑ Upload image</button>
+    <input type="file" id="upload-input" accept="image/*" style="display:none">
+    <button class="btn" id="btn-picker">𑀓 Picker</button>
+    <button class="btn" id="btn-publish" style="background:#1a2a1a;color:#6a6;">☷ Publish</button>
+    <button class="btn" id="btn-export">Export JSON</button>
+    <span id="progress"></span>
+  </div>
+
+  <div id="content">
+    <div id="views">
+      <div id="crop-view">
+        <div id="img-wrap" class="view-mode">
+          <img id="main-img" src="" alt="">
+          <canvas id="cv"></canvas>
+        </div>
+      </div>
+      <div id="inscription-view" class="visible">
+        <div id="no-crops-msg">No regions yet.<br>Use ✂ Crop mode to mark inscriptions.</div>
+      </div>
+    </div>
+
+    <!-- ── character picker panel ── -->
+    <div id="picker-panel">
+      <div id="pk-crumb">
+        <span id="pk-crumb-text"></span>
+        <span id="pk-crumb-name"></span>
+        <button class="pk-crumb-btn" id="pk-clear" style="display:none">✕ Clear</button>
+      </div>
+      <div id="pk-step-hdr">
+        <span id="pk-step-label"></span>
+        <button id="pk-next-syl" style="display:none">↩ Next syllable</button>
+        <button id="pk-back">← Back</button>
+      </div>
+      <div id="pk-type-tabs" style="display:none">
+        <button class="pttab active" data-type="cons">Consonants</button>
+        <button class="pttab" data-type="ivow">Ind. Vowels</button>
+      </div>
+      <div id="pk-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOTAL = 43;
+const KEY   = 'brahmi_v4';
+
+function imgSrc(n) { return n===1 ? 'images/img01.png' : `images/img${String(n).padStart(2,'0')}.jpeg`; }
+function ld() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
+function sd() { localStorage.setItem(KEY, JSON.stringify(data)); }
+
+let data = ld(), current = 1;
+let cropMode = false;
+let dragging = false, dragStart = null, dragRect = null;
+
+const mainImg    = document.getElementById('main-img');
+const imgWrap    = document.getElementById('img-wrap');
+const cv         = document.getElementById('cv');
+const ctx        = cv.getContext('2d');
+const cropView   = document.getElementById('crop-view');
+const inscView   = document.getElementById('inscription-view');
+const noMsg      = document.getElementById('no-crops-msg');
+const thumbList  = document.getElementById('thumb-list');
+const pageLabel  = document.getElementById('page-label');
+const prog       = document.getElementById('progress');
+const btnCrop    = document.getElementById('btn-crop-mode');
+const btnView    = document.getElementById('btn-view-inscriptions');
+
+// ── sidebar thumbnails ────────────────────────────────────────────────────────
+for (let i = 1; i <= TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'thumb'; d.dataset.n = i;
+  d.innerHTML = `<img src="${imgSrc(i)}" loading="lazy"><div class="thumb-num">${i}</div><div class="thumb-badge"></div>`;
+  d.addEventListener('click', () => goTo(i));
+  thumbList.appendChild(d);
+}
+
+function updateSidebar() {
+  let done = 0;
+  document.querySelectorAll('.thumb').forEach(el => {
+    const n = +el.dataset.n;
+    const d = data[n] || {};
+    const crops = d.crops || [];
+    const hasCrops = crops.length > 0;
+    const isDone = hasCrops ? crops.some(c => c.text) : !!d.text;
+    el.classList.toggle('active', n === current);
+    el.classList.toggle('has-crops', hasCrops);
+    el.classList.toggle('done', isDone);
+    el.querySelector('.thumb-badge').textContent = hasCrops ? crops.length : '';
+    if (isDone) done++;
+  });
+  prog.textContent = `${done} / ${TOTAL} done`;
+}
+
+// ── canvas ────────────────────────────────────────────────────────────────────
+function syncCv() {
+  cv.width = mainImg.offsetWidth; cv.height = mainImg.offsetHeight;
+  cv.style.width = cv.width + 'px'; cv.style.height = cv.height + 'px';
+}
+function drawOverlays() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  const crops = (data[current] || {}).crops || [];
+  crops.forEach((c, i) => {
+    const x=c.fx*cv.width, y=c.fy*cv.height, w=c.fw*cv.width, h=c.fh*cv.height;
+    ctx.strokeStyle='#6af'; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
+    ctx.fillStyle='rgba(100,170,255,0.07)'; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle='#6af'; ctx.font='bold 12px sans-serif';
+    ctx.fillText(`#${i+1}`, x+4, y+14);
+  });
+  if (dragging && dragRect) {
+    ctx.strokeStyle='#ff0'; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]); ctx.strokeRect(dragRect.x,dragRect.y,dragRect.w,dragRect.h);
+    ctx.setLineDash([]);
+  }
+}
+
+// ── render cropped image ──────────────────────────────────────────────────────
+function renderCrop(c, canvas) {
+  const W=mainImg.naturalWidth, H=mainImg.naturalHeight;
+  const cw=Math.round(c.fw*W), ch=Math.round(c.fh*H);
+  const rot=(c.rot||0), flipped=rot===90||rot===270;
+  const outW=flipped?ch:cw, outH=flipped?cw:ch;
+  canvas.width=outW; canvas.height=outH;
+  const tctx=canvas.getContext('2d');
+  tctx.save();
+  tctx.translate(outW/2, outH/2);
+  tctx.rotate(rot*Math.PI/180);
+  tctx.drawImage(mainImg, c.fx*W, c.fy*H, cw, ch, -cw/2, -ch/2, cw, ch);
+  tctx.restore();
+}
+
+// ── inscription view ──────────────────────────────────────────────────────────
+function buildInscriptions() {
+  Array.from(inscView.children).forEach(el => { if (el !== noMsg) el.remove(); });
+  const crops = (data[current]||{}).crops||[];
+  if (crops.length === 0) { noMsg.style.display=''; return; }
+  noMsg.style.display='none';
+
+  crops.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'crop-card';
+
+    const fs = () => c.fs || fontSize;
+    const setFs = v => { c.fs = Math.max(12, Math.min(80, v)); sd(); applyCardFs(); };
+    function applyCardFs() {
+      fsNum.textContent = fs() + 'px';
+      // only update elements that don't have a per-line fs override
+      linesSection.querySelectorAll('.card-render').forEach(el => { if (!el.dataset.lineFs) el.style.fontSize = fs() + 'px'; });
+      linesSection.querySelectorAll('.card-input').forEach(el => { if (!el.dataset.lineFs) el.style.fontSize = Math.round(fs() * 0.75) + 'px'; });
+    }
+
+    const hdr = document.createElement('div');
+    hdr.className = 'card-header';
+    hdr.innerHTML = `
+      <span class="reg-num">Region #${i+1}</span>
+      <span class="spacer"></span>
+      <button class="rot-btn" title="Rotate CCW">↺</button>
+      <button class="rot-btn" title="Rotate CW">↻</button>
+      <button class="iz-btn">🔍−</button>
+      <span class="iz-num"></span>
+      <button class="iz-btn">🔍+</button>
+      <button class="fs-btn">A−</button>
+      <span class="fs-num"></span>
+      <button class="fs-btn">A+</button>
+      <button class="redraw-btn">✎ Redraw</button>
+      <button class="del-btn">✕</button>`;
+    const [btnCCW, btnCW] = hdr.querySelectorAll('.rot-btn');
+    const [btnIzDown, btnIzUp] = hdr.querySelectorAll('.iz-btn');
+    const [btnFsDown, btnFsUp] = hdr.querySelectorAll('.fs-btn');
+    const fsNum = hdr.querySelector('.fs-num');
+    const izNum = hdr.querySelector('.iz-num');
+    btnCCW.addEventListener('click', () => rotateCrop(i, -90));
+    btnCW.addEventListener('click',  () => rotateCrop(i,  90));
+    btnFsDown.addEventListener('click', () => setFs(fs() - 4));
+    btnFsUp.addEventListener('click',   () => setFs(fs() + 4));
+    const iz = () => c.izoom || 0.5;
+    function applyIz() {
+      cropCv.style.width = Math.round(iz() * 100) + '%';
+      izNum.textContent = Math.round(iz() * 100) + '%';
+    }
+    btnIzDown.addEventListener('click', () => { c.izoom = Math.max(0.25, Math.round((iz()-0.25)*100)/100); sd(); applyIz(); });
+    btnIzUp.addEventListener('click',   () => { c.izoom = Math.min(4,    Math.round((iz()+0.25)*100)/100); sd(); applyIz(); });
+    hdr.querySelector('.redraw-btn').addEventListener('click', () => redrawCrop(i));
+    hdr.querySelector('.del-btn').addEventListener('click', () => deleteCrop(i));
+    card.appendChild(hdr);
+
+    // ── crop image + line-draw overlay ──
+    const imgDiv = document.createElement('div');
+    imgDiv.className = 'crop-img-wrap';
+    const cropCv = document.createElement('canvas');
+    const lineOv = document.createElement('canvas'); // overlay for line drawing
+    lineOv.className = 'line-overlay';
+    imgDiv.appendChild(cropCv);
+    imgDiv.appendChild(lineOv);
+    card.appendChild(imgDiv);
+
+    applyIz();
+
+    // ── line mode toggle (button added after spacer in hdr) ──
+    const btnLines = document.createElement('button');
+    btnLines.className = 'line-mode-btn';
+    btnLines.textContent = '≡ Lines';
+    hdr.querySelector('.spacer').after(btnLines);
+
+    let inLineMode = false;
+    let lineDragStart = null, lineDragCur = null;
+
+    function syncLineOverlay() {
+      lineOv.width  = cropCv.width;
+      lineOv.height = cropCv.height;
+      lineOv.style.width  = cropCv.style.width || '100%';
+      lineOv.style.height = cropCv.offsetHeight + 'px';
+    }
+    function drawLineOverlay() {
+      syncLineOverlay();
+      const oc = lineOv.getContext('2d');
+      oc.clearRect(0, 0, lineOv.width, lineOv.height);
+      const h = lineOv.height;
+      // existing lines
+      (c.lines || []).forEach((l, li) => {
+        const y1 = l.fy * h, y2 = (l.fy + l.fh) * h;
+        oc.fillStyle = 'rgba(100,200,100,0.15)';
+        oc.fillRect(0, y1, lineOv.width, y2 - y1);
+        oc.strokeStyle = '#6a6'; oc.lineWidth = 1.5;
+        oc.strokeRect(0, y1, lineOv.width, y2 - y1);
+        oc.fillStyle = '#6a6'; oc.font = 'bold 11px sans-serif';
+        oc.fillText(`L${li+1}`, 4, y1 + 14);
+      });
+      // drag preview
+      if (lineDragStart !== null && lineDragCur !== null) {
+        const y1 = Math.min(lineDragStart, lineDragCur);
+        const y2 = Math.max(lineDragStart, lineDragCur);
+        oc.fillStyle = 'rgba(255,220,80,0.2)';
+        oc.fillRect(0, y1, lineOv.width, y2 - y1);
+        oc.strokeStyle = '#fd0'; oc.lineWidth = 1.5;
+        oc.setLineDash([4,4]); oc.strokeRect(0, y1, lineOv.width, y2-y1);
+        oc.setLineDash([]);
+      }
+    }
+
+    function ovY(e) {
+      const r = lineOv.getBoundingClientRect();
+      return (e.clientY - r.top) / r.height * lineOv.height;
+    }
+    lineOv.addEventListener('mousedown', e => {
+      lineDragStart = ovY(e); lineDragCur = lineDragStart; e.preventDefault();
+    });
+    lineOv.addEventListener('mousemove', e => {
+      if (lineDragStart === null) return;
+      lineDragCur = ovY(e); drawLineOverlay();
+    });
+    lineOv.addEventListener('mouseup', e => {
+      if (lineDragStart === null) return;
+      const y1 = Math.min(lineDragStart, lineDragCur);
+      const y2 = Math.max(lineDragStart, lineDragCur);
+      if (y2 - y1 > 5) {
+        if (!c.lines) c.lines = [];
+        c.lines.push({ fy: y1 / lineOv.height, fh: (y2-y1) / lineOv.height, text: '' });
+        c.lines.sort((a, b) => a.fy - b.fy);
+        sd(); rebuildLines();
+      }
+      lineDragStart = lineDragCur = null; drawLineOverlay();
+    });
+
+    btnLines.addEventListener('click', () => {
+      inLineMode = !inLineMode;
+      btnLines.classList.toggle('active', inLineMode);
+      imgDiv.classList.toggle('line-mode', inLineMode);
+      if (inLineMode) { syncLineOverlay(); drawLineOverlay(); }
+      else { lineOv.getContext('2d').clearRect(0,0,lineOv.width,lineOv.height); }
+    });
+
+    // ── lines section ──
+    const linesSection = document.createElement('div');
+    linesSection.className = 'lines-section';
+    card.appendChild(linesSection);
+
+    function rebuildLines() {
+      linesSection.innerHTML = '';
+      const lines = c.lines || [];
+      if (lines.length === 0) {
+        // no lines — show single textarea
+        const ren2 = document.createElement('div');
+        ren2.className = 'card-render';
+        ren2.textContent = c.text || '';
+        const inp2 = document.createElement('textarea');
+        inp2.className = 'card-input';
+        inp2.placeholder = 'Type or use picker…';
+        inp2.spellcheck = false;
+        inp2.value = c.text || '';
+        inp2.rows = 2;
+        inp2.addEventListener('focus', () => { activeInput = inp2; });
+        inp2.addEventListener('input', () => {
+          ren2.textContent = inp2.value;
+          data[current].crops[i].text = inp2.value;
+          sd(); updateSidebar();
+        });
+        linesSection.appendChild(ren2);
+        linesSection.appendChild(inp2);
+        // font size applies to these
+        ren2.style.fontSize = fs() + 'px';
+        inp2.style.fontSize = Math.round(fs() * 0.75) + 'px';
+      } else {
+        if (inLineMode) drawLineOverlay();
+        lines.forEach((line, li) => {
+          const lc = document.createElement('div');
+          lc.className = 'line-card';
+
+          // line header
+          const lhdr = document.createElement('div');
+          lhdr.className = 'line-hdr';
+          lhdr.innerHTML = `
+            <span class="line-num">Line ${li+1}</span>
+            <button class="rot-btn" title="Rotate CCW">↺</button>
+            <button class="rot-btn" title="Rotate CW">↻</button>
+            <button class="iz-btn">🔍−</button>
+            <span class="iz-num"></span>
+            <button class="iz-btn">🔍+</button>
+            <button class="fs-btn">A−</button>
+            <span class="fs-num"></span>
+            <button class="fs-btn">A+</button>`;
+          const [lBtnCCW, lBtnCW] = lhdr.querySelectorAll('.rot-btn');
+          const [lBtnIzDn, lBtnIzUp] = lhdr.querySelectorAll('.iz-btn');
+          const [lBtnFsDn, lBtnFsUp] = lhdr.querySelectorAll('.fs-btn');
+          const lIzNum = lhdr.querySelector('.iz-num');
+          const lFsNum = lhdr.querySelector('.fs-num');
+
+          const lFs  = () => line.fs  || fs();
+          const lIz  = () => line.izoom || 0.5;
+          const setLFs = v => { line.fs  = Math.max(12, Math.min(80, v)); sd(); applyLine(); };
+          const setLIz = v => { line.izoom = Math.max(0.25, Math.min(4, v)); sd(); applyLine(); };
+
+          function applyLine() {
+            lcv.style.width = Math.round(lIz() * 100) + '%';
+            lIzNum.textContent = Math.round(lIz() * 100) + '%';
+            lFsNum.textContent = lFs() + 'px';
+            lren.style.fontSize = lFs() + 'px';
+            linp.style.fontSize = Math.round(lFs() * 0.75) + 'px';
+            const hasOwn = !!line.fs;
+            lren.dataset.lineFs = hasOwn ? '1' : '';
+            linp.dataset.lineFs = hasOwn ? '1' : '';
+          }
+
+          lBtnCCW.addEventListener('click', () => { line.rot = ((line.rot||0) - 90 + 360) % 360; sd(); renderLine(); });
+          lBtnCW.addEventListener('click',  () => { line.rot = ((line.rot||0) + 90) % 360; sd(); renderLine(); });
+          lBtnIzDn.addEventListener('click', () => setLIz(Math.round((lIz()-0.25)*100)/100));
+          lBtnIzUp.addEventListener('click', () => setLIz(Math.round((lIz()+0.25)*100)/100));
+          lBtnFsDn.addEventListener('click', () => setLFs(lFs() - 4));
+          lBtnFsUp.addEventListener('click', () => setLFs(lFs() + 4));
+
+          const ldel = document.createElement('button');
+          ldel.className = 'line-del'; ldel.textContent = '✕ Redraw';
+          ldel.addEventListener('click', () => {
+            c.lines.splice(li, 1); sd(); rebuildLines();
+            // activate line mode so user can redraw
+            if (!inLineMode) { inLineMode = true; btnLines.classList.add('active'); imgDiv.classList.add('line-mode'); }
+            syncLineOverlay(); drawLineOverlay();
+          });
+          lhdr.appendChild(ldel);
+
+          const ldelOnly = document.createElement('button');
+          ldelOnly.className = 'line-del'; ldelOnly.textContent = '✕';
+          ldelOnly.addEventListener('click', () => {
+            c.lines.splice(li, 1); sd(); rebuildLines();
+            if (inLineMode) drawLineOverlay();
+          });
+          lhdr.appendChild(ldelOnly);
+          lc.appendChild(lhdr);
+
+          // line image
+          const limgWrap = document.createElement('div');
+          limgWrap.className = 'line-card-img';
+          const lcv = document.createElement('canvas');
+          limgWrap.appendChild(lcv);
+          lc.appendChild(limgWrap);
+
+          function renderLine() {
+            if (!cropCv.width) return;
+            const ch = cropCv.height, cw = cropCv.width;
+            const ly = Math.round(line.fy * ch);
+            const lh = Math.max(1, Math.round(line.fh * ch));
+            const rot = (line.rot || 0) * Math.PI / 180;
+            const sw = rot % Math.PI ? lh : cw;
+            const sh = rot % Math.PI ? cw : lh;
+            lcv.width = sw; lcv.height = sh;
+            const lctx = lcv.getContext('2d');
+            lctx.save();
+            lctx.translate(sw/2, sh/2);
+            lctx.rotate(rot);
+            lctx.drawImage(cropCv, 0, ly, cw, lh, -cw/2, -lh/2, cw, lh);
+            lctx.restore();
+          }
+          renderLine();
+
+          // render + input
+          const lren = document.createElement('div');
+          lren.className = 'card-render';
+          lren.textContent = line.text || '';
+
+          const linp = document.createElement('textarea');
+          linp.className = 'card-input';
+          linp.placeholder = `Line ${li+1}…`;
+          linp.spellcheck = false;
+          linp.value = line.text || '';
+          linp.rows = 2;
+          linp.addEventListener('focus', () => { activeInput = linp; });
+          linp.addEventListener('input', () => {
+            lren.textContent = linp.value;
+            c.lines[li].text = linp.value;
+            sd(); updateSidebar();
+          });
+
+          lc.appendChild(lren);
+          lc.appendChild(linp);
+          linesSection.appendChild(lc);
+          applyLine();
+        });
+      }
+    }
+
+    // image load deferred to here so linesSection + rebuildLines are in scope
+    function doRenderCrop() { renderCrop(c, cropCv); rebuildLines(); }
+    if (mainImg.complete && mainImg.naturalWidth) doRenderCrop();
+    else mainImg.addEventListener('load', doRenderCrop);
+
+    inscView.appendChild(card);
+    applyCardFs();
+  });
+}
+
+function redrawCrop(i) {
+  const saved = data[current].crops[i].text || '';
+  data[current].crops.splice(i, 1);
+  sd(); updateSidebar();
+  _pendingText = saved; _pendingIndex = i;
+  pageLabel.textContent = `Redrawing region #${i+1} — drag to replace`;
+  showCropView(); setCropMode(true); drawOverlays();
+}
+let _pendingText = null, _pendingIndex = null;
+
+function rotateCrop(i, deg) {
+  data[current].crops[i].rot = ((data[current].crops[i].rot||0) + deg + 360) % 360;
+  sd(); buildInscriptions();
+}
+function deleteCrop(i) {
+  data[current].crops.splice(i, 1);
+  sd(); buildInscriptions(); drawOverlays(); updateSidebar();
+}
+
+// ── view switching ────────────────────────────────────────────────────────────
+function showCropView() {
+  cropView.classList.add('visible');
+  inscView.classList.remove('visible');
+  zoomControls.style.display = 'flex';
+  syncCv(); drawOverlays();
+}
+function showInscView() {
+  inscView.classList.add('visible');
+  cropView.classList.remove('visible');
+  zoomControls.style.display = 'none';
+  cropMode = false;
+  btnCrop.textContent = '✂ Crop mode'; btnCrop.style.background = ''; btnCrop.style.color = '';
+  imgWrap.className = 'view-mode';
+  buildInscriptions();
+}
+function setCropMode(on) {
+  cropMode = on;
+  btnCrop.textContent = on ? '✂ Exit crop' : '✂ Crop mode';
+  btnCrop.style.background = on ? '#6af' : '';
+  btnCrop.style.color = on ? '#000' : '';
+  imgWrap.className = on ? 'crop-mode' : 'view-mode';
+}
+
+btnCrop.addEventListener('click', () => {
+  if (cropMode) { showInscView(); } else { showCropView(); setCropMode(true); }
+});
+btnView.addEventListener('click', () => showInscView());
+
+// ── crop drag ─────────────────────────────────────────────────────────────────
+function cvXY(e) { const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+cv.addEventListener('mousedown', e => {
+  if (!cropMode) return;
+  dragging=true; dragStart=cvXY(e); dragRect={x:dragStart.x,y:dragStart.y,w:0,h:0}; e.preventDefault();
+});
+cv.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const p=cvXY(e);
+  dragRect={x:Math.min(dragStart.x,p.x),y:Math.min(dragStart.y,p.y),w:Math.abs(p.x-dragStart.x),h:Math.abs(p.y-dragStart.y)};
+  drawOverlays();
+});
+cv.addEventListener('mouseup', e => {
+  if (!dragging) return; dragging=false;
+  if (dragRect&&dragRect.w>10&&dragRect.h>10) {
+    if (!data[current]) data[current]={};
+    if (!data[current].crops) data[current].crops=[];
+    const nc={fx:dragRect.x/cv.width, fy:dragRect.y/cv.height, fw:dragRect.w/cv.width, fh:dragRect.h/cv.height, text:_pendingText||'', rot:0};
+    if (_pendingIndex!==null) data[current].crops.splice(_pendingIndex,0,nc);
+    else data[current].crops.push(nc);
+    _pendingText=null; _pendingIndex=null;
+    pageLabel.textContent=`Image ${current} of ${TOTAL}`;
+    sd(); updateSidebar(); drawOverlays();
+  }
+  dragRect=null; drawOverlays();
+});
+
+// ── navigation ────────────────────────────────────────────────────────────────
+function goTo(n) {
+  current=n; pageLabel.textContent=`Image ${n} of ${TOTAL}`;
+  mainImg.src=imgSrc(n);
+  mainImg.onload=()=>{
+    const crops=(data[current]||{}).crops||[];
+    if (crops.length===0) { showCropView(); setCropMode(true); } else { showInscView(); }
+  };
+  updateSidebar();
+  document.querySelector(`.thumb[data-n="${n}"]`)?.scrollIntoView({block:'nearest'});
+}
+document.getElementById('btn-prev').addEventListener('click', ()=>{ if(current>1) goTo(current-1); });
+document.getElementById('btn-next').addEventListener('click', ()=>{ if(current<TOTAL) goTo(current+1); });
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='TEXTAREA') return;
+  if(e.key==='ArrowLeft'  && current>1)    goTo(current-1);
+  if(e.key==='ArrowRight' && current<TOTAL) goTo(current+1);
+});
+
+// ── export ────────────────────────────────────────────────────────────────────
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  const rows=[];
+  for(let i=1;i<=TOTAL;i++){
+    const d=data[i]||{};
+    if(d.crops&&d.crops.length) d.crops.forEach((c,ci)=>rows.push({image:imgSrc(i),region:ci+1,text:c.text||''}));
+    else rows.push({image:imgSrc(i),region:null,text:d.text||''});
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));
+  a.download='transcriptions.json'; a.click();
+});
+
+// ── image zoom ────────────────────────────────────────────────────────────────
+let imgZoom=1;
+const zoomControls=document.getElementById('zoom-controls');
+const zoomLabel=document.getElementById('zoom-label');
+function applyZoom() {
+  if (imgZoom===1) { mainImg.style.width=''; mainImg.style.maxWidth='100%'; }
+  else { mainImg.style.maxWidth='none'; mainImg.style.width=Math.round(mainImg.naturalWidth*imgZoom)+'px'; }
+  zoomLabel.textContent=Math.round(imgZoom*100)+'%';
+  syncCv(); drawOverlays();
+}
+document.getElementById('btn-zoom-in').addEventListener('click', ()=>{ imgZoom=Math.min(imgZoom+0.25,4); applyZoom(); });
+document.getElementById('btn-zoom-out').addEventListener('click', ()=>{ imgZoom=Math.max(imgZoom-0.25,0.25); applyZoom(); });
+document.getElementById('btn-zoom-fit').addEventListener('click', ()=>{ imgZoom=1; applyZoom(); });
+document.getElementById('crop-view').addEventListener('wheel', e=>{
+  if (!cropMode&&imgZoom===1) return;
+  e.preventDefault();
+  imgZoom=Math.max(0.25,Math.min(4,imgZoom+(e.deltaY<0?0.1:-0.1)));
+  applyZoom();
+}, {passive:false});
+
+const fontSize=28;
+window.addEventListener('resize',()=>{ syncCv(); drawOverlays(); });
+
+// ── character picker ──────────────────────────────────────────────────────────
+let activeInput = null;
+const pickerPanel  = document.getElementById('picker-panel');
+const pkGrid       = document.getElementById('pk-grid');
+const pkStepLabel  = document.getElementById('pk-step-label');
+const pkBack       = document.getElementById('pk-back');
+const pkNextSyl    = document.getElementById('pk-next-syl');
+const pkCrumbText  = document.getElementById('pk-crumb-text');
+const pkCrumbName  = document.getElementById('pk-crumb-name');
+const pkClear      = document.getElementById('pk-clear');
+const pkTypeTabs   = document.getElementById('pk-type-tabs');
+const btnPicker    = document.getElementById('btn-picker');
+
+// state: lastInsert tracks position so variants can overwrite
+let pk = { step: 1, type: 'cons', cons: null, consVs: null, sign: null,
+           lastInsertStart: null, lastInsertLen: 0 };
+
+btnPicker.addEventListener('click', () => {
+  const open = pickerPanel.classList.toggle('open');
+  btnPicker.classList.toggle('open', open);
+  if (open) pkRender();
+});
+
+document.querySelectorAll('.pttab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    pk.type = btn.dataset.type;
+    document.querySelectorAll('.pttab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    pkRender();
+  });
+});
+
+pkNextSyl.addEventListener('click', () => { pkReset(); pkRender(); });
+pkBack.addEventListener('click', () => {
+  if (pk.step === 2) { pk.step = 1; pk.cons = null; }
+  else if (pk.step === 3) { pk.step = 2; pk.sign = null; }
+  pkRender();
+});
+pkClear.addEventListener('click', () => {
+  pk = { ...pk, step: 1, cons: null, consVs: null, sign: null };
+  pkRender();
+});
+
+// insert text at cursor; if overwrite=true, replace the previous insertion
+function insertChar(text, overwrite = false) {
+  if (!activeInput) activeInput = inscView.querySelector('.card-input');
+  if (!activeInput) return;
+  let s, e2;
+  if (overwrite && pk.lastInsertStart !== null) {
+    s  = pk.lastInsertStart;
+    e2 = pk.lastInsertStart + pk.lastInsertLen;
+  } else {
+    s  = activeInput.selectionStart ?? activeInput.value.length;
+    e2 = activeInput.selectionEnd   ?? s;
+  }
+  const v = activeInput.value;
+  activeInput.value = v.slice(0, s) + text + v.slice(e2);
+  activeInput.selectionStart = activeInput.selectionEnd = s + text.length;
+  pk.lastInsertStart = s;
+  pk.lastInsertLen   = text.length;
+  activeInput.dispatchEvent(new Event('input'));
+  activeInput.focus();
+}
+
+function pkCharBtn(display, label, onClick) {
+  const btn = document.createElement('button');
+  btn.className = 'pk-char';
+  btn.innerHTML = `${display}<span class="nl">${label}</span>`;
+  btn.addEventListener('click', onClick);
+  return btn;
+}
+
+function pkReset() {
+  pk = { ...pk, step: 1, cons: null, consVs: null, sign: null };
+}
+
+function pkRender() {
+  const ATB = window.ATB;
+  if (!ATB) { pkGrid.textContent = 'variants.js not loaded'; return; }
+  pkGrid.innerHTML = '';
+
+  // breadcrumb
+  let crumb = '', crumbName = '';
+  if (pk.cons) { crumb += pk.cons.u + (pk.consVs || ''); crumbName = pk.cons.n; }
+  if (pk.sign) { crumb += pk.sign.u; crumbName += ' + ' + pk.sign.n; }
+  pkCrumbText.textContent = crumb;
+  pkCrumbName.textContent = crumbName;
+  pkClear.style.display = crumb ? '' : 'none';
+  pkBack.style.display = pk.step > 1 ? '' : 'none';
+  pkNextSyl.style.display = pk.step > 1 ? '' : 'none';
+  pkTypeTabs.style.display = pk.step === 1 ? '' : 'none';
+
+  if (pk.step === 1) {
+    // ── Step 1: pick consonant → inserts default immediately ──
+    pkStepLabel.textContent = pk.type === 'cons' ? 'Pick consonant' : 'Pick independent vowel';
+    const entries = pk.type === 'cons' ? ATB.cons.filter(c => c.syl) : ATB.cons.filter(c => !c.syl);
+    entries.forEach(entry => {
+      pkGrid.appendChild(pkCharBtn(entry.u, entry.n, () => {
+        pk.cons = entry; pk.consVs = null;
+        insertChar(entry.u);
+        pk.step = 2;
+        pkRender();
+      }));
+    });
+
+  } else if (pk.step === 2) {
+    // ── Step 2: cons variants (overwrite) + vowel signs below ──
+    pkStepLabel.textContent = pk.cons.n;
+    const consDisplay = pk.cons.u + (pk.consVs || '');
+
+    // non-default cons variants
+    const nonDefaultCons = pk.cons.cvs.slice(1);
+    if (nonDefaultCons.length) {
+      const sec = document.createElement('div');
+      sec.className = 'pk-section'; sec.textContent = 'Variants';
+      pkGrid.appendChild(sec);
+      nonDefaultCons.forEach(cv => {
+        pkGrid.appendChild(pkCharBtn(pk.cons.u + cv.vs, cv.l, () => {
+          pk.consVs = cv.vs;
+          insertChar(pk.cons.u + cv.vs, true);   // overwrite, stay on step 2
+          pkRender();
+        }));
+      });
+    }
+
+    // vowel signs
+    const sec2 = document.createElement('div');
+    sec2.className = 'pk-section'; sec2.textContent = 'Vowel signs';
+    pkGrid.appendChild(sec2);
+
+    ATB.vsigns.forEach(entry => {
+      pkGrid.appendChild(pkCharBtn(consDisplay + entry.u, entry.n, () => {
+        pk.sign = entry;
+        insertChar(entry.u);
+        pk.step = 3;
+        pkRender();
+      }));
+    });
+
+  } else if (pk.step === 3) {
+    // ── Step 3: sign variants (overwrite) ──
+    pkStepLabel.textContent = pk.sign.n;
+    const consDisplay = pk.cons.u + (pk.consVs || '');
+    const nonDefaultSign = pk.sign.cvs.slice(1);
+
+    if (nonDefaultSign.length) {
+      const sec = document.createElement('div');
+      sec.className = 'pk-section'; sec.textContent = 'Variants';
+      pkGrid.appendChild(sec);
+    }
+
+    nonDefaultSign.forEach(cv => {
+      const signChar = pk.sign.u + cv.vs;
+      pkGrid.appendChild(pkCharBtn(consDisplay + signChar, cv.l, () => {
+        insertChar(signChar, true);
+        pkReset(); pkRender();
+      }));
+    });
+  }
+}
+
+document.getElementById('btn-publish').addEventListener('click', () => window.open('publish.html', '_blank'));
+
+// ── transcribe mode ───────────────────────────────────────────────────────────
+const TRANSCRIBE_MODE = new URLSearchParams(location.search).get('mode') === 'transcribe';
+
+if (TRANSCRIBE_MODE) {
+  document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('btn-prev').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('btn-export').style.display = 'none';
+  document.getElementById('progress').style.display = 'none';
+  document.getElementById('btn-upload').style.display = '';
+  pageLabel.textContent = 'No image loaded';
+  showCropView();
+
+  const uploadInput = document.getElementById('upload-input');
+  document.getElementById('btn-upload').addEventListener('click', () => uploadInput.click());
+  uploadInput.addEventListener('change', () => {
+    const file = uploadInput.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      mainImg.onload = () => { syncCv(); drawOverlays(); setCropMode(true); };
+      mainImg.src = e.target.result;
+      pageLabel.textContent = file.name;
+    };
+    reader.readAsDataURL(file);
+    uploadInput.value = '';
+  });
+} else {
+  goTo(1);
+}
+</script>
+</body>
+</html>

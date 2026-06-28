@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Adinatha Tamil-Brahmi — Publication View</title>
+<script src="brahmi-core.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #f5f0e8; color: #111; }
+
+@font-face { font-family: 'ATB'; src: url('../master_ttf/Adinatha-Tamil-Brahmi-2.ttf'); }
+
+/* toolbar */
+#toolbar {
+  position: sticky; top: 0; z-index: 10;
+  background: #2a1a0a; color: #e8d8b8; padding: 8px 16px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  border-bottom: 2px solid #6a4a1a;
+}
+#toolbar h1 { font-size: 14px; font-weight: 700; letter-spacing: 1px; color: #e8c87a; margin-right: auto; }
+.ctrl { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #b8a888; }
+.ctrl input[type=range] { width: 80px; accent-color: #c8903a; }
+.ctrl span { min-width: 32px; text-align: right; font-weight: 700; color: #e8c87a; }
+#btn-transcribe { padding: 5px 10px; background: #3a2a10; border: 1px solid #6a4a1a; color: #c8903a; cursor: pointer; border-radius: 3px; font-size: 11px; }
+#btn-transcribe:hover { background: #4a3a20; }
+#btn-print { padding: 5px 10px; background: #3a2a10; border: 1px solid #6a4a1a; color: #c8903a; cursor: pointer; border-radius: 3px; font-size: 11px; }
+#btn-print:hover { background: #4a3a20; }
+#empty-msg { display: none; padding: 60px; text-align: center; color: #888; font-size: 14px; }
+
+/* gallery */
+#gallery { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; display: flex; flex-direction: column; gap: 32px; }
+
+.page-section { display: flex; flex-direction: column; gap: 12px; }
+.page-heading { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #d8c898; padding-bottom: 4px; }
+
+.pub-card { background: #fff; border: 1px solid #d8c898; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.pub-card-hdr { font-size: 10px; color: #888; padding: 4px 10px; background: #fdf8ee; border-bottom: 1px solid #e8dab8; letter-spacing: 1px; text-transform: uppercase; }
+
+.pub-img-wrap { background: #eee; overflow-x: auto; }
+.pub-img-wrap canvas { display: block; height: auto; }
+
+.pub-text { font-family: 'ATB', serif; line-height: 2; padding: 8px 12px; color: #111; word-break: break-all; white-space: pre-wrap; border-top: 1px solid #e8dab8; background: #fffef8; min-height: 36px; }
+.pub-text:empty { display: none; }
+
+.line-section { border-top: 1px solid #e8dab8; display: flex; flex-direction: column; }
+.line-row { display: flex; flex-direction: column; border-top: 1px solid #f0e8d0; }
+.line-row:first-child { border-top: none; }
+.line-label { font-size: 9px; color: #aaa; padding: 3px 10px 0; text-transform: uppercase; letter-spacing: 1px; }
+
+@media print {
+  #toolbar { display: none; }
+  #gallery { max-width: 100%; padding: 0; }
+  .pub-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  .page-section { break-before: page; }
+  .page-section:first-child { break-before: auto; }
+}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>Adinatha Tamil-Brahmi</h1>
+  <div class="ctrl">Image zoom <input type="range" id="sl-zoom" min="10" max="150" value="40" step="5"> <span id="lb-zoom">40%</span></div>
+  <div class="ctrl">Font <input type="range" id="sl-font" min="16" max="72" value="28" step="2"> <span id="lb-font">28px</span></div>
+  <a href="transcribe.html" id="btn-transcribe">✎ Transcribe</a>
+  <button id="btn-print" onclick="window.print()">⎙ Print</button>
+</div>
+
+<div id="empty-msg">No transcriptions yet. <a href="transcribe.html">Open the transcription tool</a> to get started.</div>
+<div id="gallery"></div>
+
+<script>
+const data = ld();
+const gallery = document.getElementById('gallery');
+
+let imgZoom = 40;
+let fontSize = 28;
+
+const slZoom = document.getElementById('sl-zoom');
+const lbZoom = document.getElementById('lb-zoom');
+const slFont = document.getElementById('sl-font');
+const lbFont = document.getElementById('lb-font');
+
+slZoom.addEventListener('input', () => {
+  imgZoom = +slZoom.value;
+  lbZoom.textContent = imgZoom + '%';
+  document.querySelectorAll('.pub-img-wrap canvas').forEach(cv => { cv.style.width = Math.round(cv.width * imgZoom / 100) + 'px'; });
+});
+slFont.addEventListener('input', () => {
+  fontSize = +slFont.value;
+  lbFont.textContent = fontSize + 'px';
+  document.querySelectorAll('.pub-text').forEach(el => { el.style.fontSize = (el.dataset.fs ? +el.dataset.fs : fontSize) + 'px'; });
+});
+
+function setCanvasZoom(cv) { cv.style.width = Math.round(cv.width * imgZoom / 100) + 'px'; cv.style.height = 'auto'; }
+
+function pubText(text, fs) {
+  const el = document.createElement('div');
+  el.className = 'pub-text';
+  el.textContent = text || '';
+  el.style.fontSize = (fs || fontSize) + 'px';
+  if (fs) el.dataset.fs = fs;
+  return el;
+}
+
+async function buildGallery() {
+  let anyData = false;
+
+  for (let n = 1; n <= TOTAL; n++) {
+    const pd = data[n];
+    if (!pd || !pd.crops || pd.crops.length === 0) continue;
+    const crops = pd.crops.filter(c => c.text || (c.lines && c.lines.some(l => l.text)));
+    if (crops.length === 0) continue;
+    anyData = true;
+
+    const section = document.createElement('div');
+    section.className = 'page-section';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'page-heading';
+    hdr.textContent = `Page ${n}`;
+    section.appendChild(hdr);
+
+    // Load the page image (IDB or disk)
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    const renderPageCrops = () => {
+      crops.forEach((c, ci) => {
+        const card = document.createElement('div');
+        card.className = 'pub-card';
+
+        const cardHdr = document.createElement('div');
+        cardHdr.className = 'pub-card-hdr';
+        cardHdr.textContent = `Region ${ci + 1}`;
+        card.appendChild(cardHdr);
+
+        // Crop image
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'pub-img-wrap';
+        const cropCv = document.createElement('canvas');
+        imgWrap.appendChild(cropCv);
+        card.appendChild(imgWrap);
+
+        if (img.naturalWidth) {
+          renderCrop(c, cropCv, img);
+          setCanvasZoom(cropCv);
+        }
+
+        const lines = c.lines || [];
+        if (lines.length > 0) {
+          const lineSection = document.createElement('div');
+          lineSection.className = 'line-section';
+          lines.forEach((line, li) => {
+            if (!line.text) return;
+            const row = document.createElement('div');
+            row.className = 'line-row';
+
+            const lbl = document.createElement('div');
+            lbl.className = 'line-label';
+            lbl.textContent = `Line ${li + 1}`;
+            row.appendChild(lbl);
+
+            const limgWrap = document.createElement('div');
+            limgWrap.className = 'pub-img-wrap';
+            const lcv = document.createElement('canvas');
+            limgWrap.appendChild(lcv);
+            row.appendChild(limgWrap);
+
+            if (cropCv.width) {
+              renderLineCanvas(cropCv, line, lcv);
+              setCanvasZoom(lcv);
+            }
+
+            row.appendChild(pubText(line.text, line.fs));
+            lineSection.appendChild(row);
+          });
+          if (lineSection.children.length) card.appendChild(lineSection);
+        } else if (c.text) {
+          card.appendChild(pubText(c.text, c.fs));
+        }
+
+        section.appendChild(card);
+      });
+    };
+
+    img.onload = () => { renderPageCrops(); };
+    img.onerror = () => { renderPageCrops(); }; // show text-only if image missing
+
+    await ImageDB.loadImg(n, img);
+    // If image already cached and complete, render immediately
+    if (img.complete && img.naturalWidth) renderPageCrops();
+
+    gallery.appendChild(section);
+  }
+
+  if (!anyData) {
+    document.getElementById('empty-msg').style.display = 'block';
+  }
+}
+
+buildGallery();
+</script>
+</body>
+</html>
